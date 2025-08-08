@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getUserPosts } from '../services/postService';
+import { getMyPosts } from '../services/postService';
 import Post from '../components/Post';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,11 +12,13 @@ const MyPostsPage = () => {
   const fetchUserPosts = async () => {
     try {
       setLoading(true);
-      const userPosts = await getUserPosts();
-      setPosts(userPosts);
+      const userPosts = await getMyPosts();
+      // Ensure we always set an array, even if response is not an array
+      setPosts(Array.isArray(userPosts) ? userPosts : []);
     } catch (err) {
       setError('Failed to fetch your posts');
       console.error(err);
+      setPosts([]); // Reset to empty array on error
     } finally {
       setLoading(false);
     }

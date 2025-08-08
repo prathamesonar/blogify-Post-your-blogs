@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import postService from '../services/postService';
+import { getFeed, likePost, commentOnPost } from '../services/postService';
 import Post from '../components/Post';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -15,10 +15,11 @@ const HomePage = () => {
     const fetchFeed = async () => {
       if (user) {
         try {
-          const { data } = await postService.getFeed();
-          setPosts(data);
+          const feedPosts = await getFeed();
+          setPosts(Array.isArray(feedPosts) ? feedPosts : []);
         } catch (error) {
           console.error("Failed to fetch feed", error);
+          setPosts([]);
         } finally {
           setLoading(false);
         }
@@ -30,17 +31,17 @@ const HomePage = () => {
   }, [user]);
 
   const handlePostUpdate = (updatedPost) => {
-    setPosts(posts.map(post => post._id === updatedPost._id ? updatedPost : post));
+    setPosts(prevPosts => prevPosts.map(post => post._id === updatedPost._id ? updatedPost : post));
   };
 
   const handlePostDelete = (postId) => {
-    setPosts(posts.filter(post => post._id !== postId));
+    setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
   };
 
   const handleLike = async (postId) => {
     try {
-      const { data } = await postService.likePost(postId);
-      handlePostUpdate(data);
+      const updatedPost = await likePost(postId);
+      handlePostUpdate(updatedPost);
     } catch (error) {
       console.error('Error liking post:', error);
     }
@@ -48,8 +49,8 @@ const HomePage = () => {
 
   const handleComment = async (postId, text) => {
     try {
-      const { data } = await postService.commentOnPost(postId, { text });
-      handlePostUpdate(data);
+      const updatedPost = await commentOnPost(postId, { text });
+      handlePostUpdate(updatedPost);
     } catch (error) {
       console.error('Error commenting on post:', error);
     }
@@ -77,11 +78,15 @@ const HomePage = () => {
   };
 
   if (loading) {
-    return <div className="text-center mt-10">Loading feed...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-6">
+    <div className="max-w-2xl mx-auto mt-6 px-4">
       {user ? (
         <>
           {/* User Search Bar */}
@@ -116,20 +121,23 @@ const HomePage = () => {
 
           {/* Feed */}
           {posts.length > 0 ? (
-            posts.map(post => (
-              <Post 
-                key={post._id} 
-                post={post} 
-                onLike={handleLike}
-                onComment={handleComment}
-                onDelete={handlePostDelete}
-                onEdit={handleEdit}
-              />
-            ))
+            <div className="space-y-6">
+              {posts.map(post => (
+                <Post 
+                  key={post._id} 
+                  post={post} 
+                  onLike={handleLike}
+                  onComment={handleComment}
+                  onDelete={handlePostDelete}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </div>
           ) : (
-            <div className="text-center text-gray-500">
-              <p>Your feed is empty.</p>
+            <div className="text-center text-gray-500 py-12">
+              <p className="text-xl mb-4">Your feed is empty.</p>
               <p>Follow some users to see their posts here!</p>
+              <p className="mt-4 text-sm">Or check out what other users are sharing!</p>
             </div>
           )}
         </>

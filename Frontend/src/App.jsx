@@ -10,6 +10,7 @@ import RegisterPage from './pages/RegisterPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import SettingsPage from './pages/SettingsPage';
+import MyPostsPage from './pages/MyPostsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -84,6 +85,16 @@ function App() {
               <ProtectedRoute>
                 <AuthenticatedLayout>
                   <SettingsPage />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-posts"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <MyPostsPage />
                 </AuthenticatedLayout>
               </ProtectedRoute>
             }

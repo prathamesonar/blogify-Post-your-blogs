@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import postService from '../services/postService';
+import { createPost } from '../services/postService';
 
 const CreatePost = ({ onPostCreated }) => {
   const [text, setText] = useState('');
@@ -12,7 +12,7 @@ const CreatePost = ({ onPostCreated }) => {
       return;
     }
     try {
-      const { data: newPost } = await postService.createPost({ text });
+      const { data: newPost } = await createPost({ text });
       onPostCreated(newPost); // Pass the new post up to the parent
       setText('');
       setError('');
