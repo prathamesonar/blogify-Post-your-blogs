@@ -3,27 +3,25 @@ import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 import { useAuth } from '../context/AuthContext';
 
-const RegisterPage = () => {
+const LoginPage = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    username: '',
-    email: '',
+    loginIdentifier: '',
     password: '',
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { user, register } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
       // If user is already logged in, redirect to home page
-      navigate('/');
+      navigate('/home');
     }
   }, [user, navigate]);
 
-  const { name, username, email, password } = formData;
+  const { loginIdentifier, password } = formData;
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -38,16 +36,16 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const userData = { name, username, email, password };
-      await register(userData);
-      navigate('/'); // Redirect to home page on success
+      const userData = { loginIdentifier, password };
+      await login(userData);
+      navigate('/home'); // Redirect to home page on success
     } catch (err) {
       const message =
         (err.response && err.response.data && err.response.data.message) ||
         err.message ||
-        'Registration failed. Please try again.';
+        'Login failed. Please check your credentials.';
       setError(message);
-      console.error('Registration failed:', message);
+      console.error('Login failed:', message);
     } finally {
       setLoading(false);
     }
@@ -58,7 +56,7 @@ const RegisterPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="w-full max-w-md px-8 py-6 mt-4 text-center bg-white shadow-lg rounded-lg">
-          <h3 className="text-2xl font-bold mb-4">Already Registered</h3>
+          <h3 className="text-2xl font-bold mb-4">Already Logged In</h3>
           <p className="text-gray-600 mb-6">
             You are already logged in as <strong>{user.name || user.username}</strong>.
           </p>
@@ -84,7 +82,7 @@ const RegisterPage = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md px-8 py-6 mt-4 text-left bg-white shadow-lg rounded-lg">
-        <h3 className="text-2xl font-bold text-center">Create an account</h3>
+        <h3 className="text-2xl font-bold text-center">Login to your account</h3>
         
         {error && (
           <div className="p-3 my-2 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
@@ -95,37 +93,13 @@ const RegisterPage = () => {
         <form onSubmit={onSubmit}>
           <div className="mt-4">
             <div>
-              <label className="block" htmlFor="name">Name</label>
+              <label className="block" htmlFor="loginIdentifier">Email or Username</label>
               <input
                 type="text"
-                placeholder="Name"
+                placeholder="Email or Username"
                 className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                name="name"
-                value={name}
-                onChange={onChange}
-                required
-              />
-            </div>
-            <div className="mt-4">
-              <label className="block" htmlFor="username">Username</label>
-              <input
-                type="text"
-                placeholder="Username"
-                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                name="username"
-                value={username}
-                onChange={onChange}
-                required
-              />
-            </div>
-            <div className="mt-4">
-              <label className="block" htmlFor="email">Email</label>
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                name="email"
-                value={email}
+                name="loginIdentifier"
+                value={loginIdentifier}
                 onChange={onChange}
                 required
               />
@@ -140,16 +114,14 @@ const RegisterPage = () => {
                 value={password}
                 onChange={onChange}
                 required
-                minLength="6"
               />
-              <p className="text-xs text-gray-500 mt-1">Must be at least 6 characters long.</p>
             </div>
-            <div className="flex items-baseline justify-between">
+            <div className="flex">
               <button 
                 className="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900 disabled:opacity-50"
                 disabled={loading}
               >
-                {loading ? 'Registering...' : 'Register'}
+                {loading ? 'Logging in...' : 'Login'}
               </button>
             </div>
           </div>
@@ -157,9 +129,9 @@ const RegisterPage = () => {
         
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link to="/login" className="text-indigo-600 hover:text-indigo-500">
-              Login here
+            Don't have an account?{' '}
+            <Link to="/register" className="text-indigo-600 hover:text-indigo-500">
+              Register here
             </Link>
           </p>
         </div>
@@ -168,4 +140,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;

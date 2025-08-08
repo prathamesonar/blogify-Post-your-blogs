@@ -1,19 +1,96 @@
+// The main app file with all routes.
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import RegisterPage from './pages/RegisterPage';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Header from './components/Header';
+import LandingPage from './pages/LandingPage';
+import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import SettingsPage from './pages/SettingsPage';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+  return user ? children : <Navigate to="/login" replace />;
+};
+
+// Public Route Component (redirects to home if logged in)
+const PublicRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+  return !user ? children : <Navigate to="/home" replace />;
+};
+
+// Layout for authenticated routes
+const AuthenticatedLayout = ({ children }) => {
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <Header />
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {children}
+      </main>
+    </div>
+  );
+};
 
 function App() {
   return (
-    <Router>
-      <div className="container mx-auto px-4">
+    <AuthProvider>
+      <Router>
         <Routes>
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          {/* We will add a home page route later */}
+          {/* Public routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <HomePage />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <SettingsPage />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

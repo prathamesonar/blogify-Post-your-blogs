@@ -1,30 +1,19 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./utils/connectDB');
-const userRoutes = require('./routes/userRoutes'); // Import user routes
+const userRoutes = require('./routes/userRoutes');
+const postRoutes = require('./routes/postRoutes'); // Import post routes
 
-// Load environment variables
 dotenv.config();
-
-// Connect to the database
 connectDB();
-
 const app = express();
 
-// Middleware to parse JSON
 app.use(express.json());
+app.use(cookieParser());
 
-// A simple test route
-app.get('/', (req, res) => {
-  res.send('API is running...');
-});
-
-// Mount the user routes
-app.use('/api/users', userRoutes); // Add this line
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes); // Mount post routes
 
 const PORT = process.env.PORT || 5000;
-
-
-app.listen(PORT, () => {
-  console.log(`Server running on port http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
