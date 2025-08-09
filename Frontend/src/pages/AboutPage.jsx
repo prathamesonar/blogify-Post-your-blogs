@@ -1,39 +1,35 @@
 import React from 'react';
+import Header from '../components/Header';
+import { PenTool, Users, Target, Heart, Shield, Lightbulb, Globe, Award } from 'lucide-react';
 
 const AboutPage = () => {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-6">About Us</h1>
+    <div className="min-h-screen bg-gray-50">
+      <Header />
       
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Welcome to SocialApp</h2>
-        <p className="text-gray-600 mb-4">
-          SocialApp is a modern social media platform designed to connect people from all around the world. 
-          Our mission is to create meaningful connections and foster communities through shared experiences.
-        </p>
-        
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">Our Story</h3>
-        <p className="text-gray-600 mb-4">
-          Founded in 2024, SocialApp started as a simple idea to bring people closer together. 
-          We believe that everyone has a story to tell, and our platform provides the perfect space 
-          to share those stories with the world.
-        </p>
-        
-        <h3 className="text-xl font-semibold text-gray-800 mb-3">Our Values</h3>
-        <ul className="list-disc list-inside text-gray-600 space-y-2">
-          <li>Community First - Building strong, supportive communities</li>
-          <li>Innovation - Constantly improving user experience</li>
-          <li>Privacy - Protecting user data and maintaining trust</li>
-          <li>Inclusivity - Welcoming everyone regardless of background</li>
-          <li>Authenticity - Encouraging genuine connections and real conversations</li>
-        </ul>
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white py-20">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="flex justify-center mb-6">
+            <PenTool className="h-16 w-16 text-indigo-200" />
+          </div>
+          <h1 className="text-5xl font-bold mb-6">About Blogify</h1>
+          <p className="text-xl text-indigo-100 max-w-2xl mx-auto leading-relaxed">
+            Empowering writers and creators to share their stories with the world through our innovative blogging platform.
+          </p>
+        </div>
       </div>
-      
-      <div className="bg-blue-50 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-blue-800 mb-3">Join Our Community</h3>
-        <p className="text-blue-700">
-          Ready to start your journey with SocialApp? Sign up today and become part of our growing community!
-        </p>
+
+      <div className="max-w-6xl mx-auto px-4 py-16">
+        
+        <div className="bg-indigo-50 rounded-2xl p-8 text-center">
+          <h3 className="text-2xl font-bold text-indigo-900 mb-4">Join Our Growing Community</h3>
+          <p className="text-indigo-700 text-lg mb-6 max-w-2xl mx-auto">
+            Ready to start your blogging journey with Blogify? Join thousands of writers who trust us 
+            to help them share their stories with the world.
+          </p>
+         
+        </div>
       </div>
     </div>
   );

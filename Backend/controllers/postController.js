@@ -1,3 +1,4 @@
+
 const Post = require('../models/postModel');
 const User = require('../models/userModel');
 
@@ -20,20 +21,10 @@ const createPost = async (req, res) => {
 // Get feed posts (for the current user)
 const getFeedPosts = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
-        const following = user.following;
-        
-        // Exclude current user's posts from feed
-        let feedPosts;
-        if (following.length === 0) {
-            feedPosts = await Post.find({ 
-                user: { $ne: req.user._id } 
-            }).sort({ createdAt: -1 }).populate('user', 'name username profilePic');
-        } else {
-            feedPosts = await Post.find({ 
-                user: { $in: following, $ne: req.user._id } 
-            }).sort({ createdAt: -1 }).populate('user', 'name username profilePic');
-        }
+        // Show ALL posts from other users (excluding current user's posts)
+        const feedPosts = await Post.find({ 
+            user: { $ne: req.user._id } 
+        }).sort({ createdAt: -1 }).populate('user', 'name username profilePic');
         
         res.status(200).json(feedPosts);
     } catch (error) {
@@ -122,7 +113,12 @@ const updatePost = async (req, res) => {
     post.image = image || post.image;
     
     const updatedPost = await post.save();
-    res.status(200).json(updatedPost);
+    
+    // Populate the user field to maintain consistent data structure
+    const populatedPost = await Post.findById(updatedPost._id)
+      .populate('user', 'name username profilePic');
+    
+    res.status(200).json(populatedPost);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const connectDB = require('./utils/connectDB');
 const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes'); // Import post routes
@@ -8,6 +9,14 @@ const postRoutes = require('./routes/postRoutes'); // Import post routes
 dotenv.config();
 connectDB();
 const app = express();
+
+// CORS configuration
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000'], // Frontend URLs
+  credentials: true, // Allow cookies to be sent
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(express.json());
 app.use(cookieParser());

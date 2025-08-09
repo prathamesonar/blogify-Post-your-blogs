@@ -1,240 +1,206 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { PenTool, Users, BookOpen, TrendingUp, Edit3, MessageCircle, Eye, Heart } from 'lucide-react';
 
 const LandingPage = () => {
-  const { user, logout } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
+  // Redirect logged-in users to home
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/home', { replace: true });
+    }
+  }, [user, loading, navigate]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="bg-white shadow-lg">
+      <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-indigo-600">SocialApp</h1>
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-2">
+              <PenTool className="h-8 w-8 text-indigo-600" />
+              <h1 className="text-2xl font-bold text-gray-900">Blogify</h1>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-8">
+              <Link to="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                About
+              </Link>
+              <Link to="/contact" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Contact
+              </Link>
               {user ? (
                 <>
-                  <span className="text-gray-700">Welcome, {user.name || user.username}</span>
+                  <span className="text-gray-700 font-medium">Welcome, {user.name || user.username}</span>
                   <Link
                     to="/home"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-full font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm"
                   >
-                    Home
+                    Dashboard
                   </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-300"
-                  >
-                    Logout
-                  </button>
                 </>
               ) : (
                 <>
                   <Link
                     to="/login"
-                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-300"
+                    className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
                   >
-                    Login
+                    Sign In
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-300"
+                    className="bg-indigo-600 text-white px-6 py-2 rounded-full font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm"
                   >
-                    Register
+                    Start Writing
                   </Link>
                 </>
               )}
-              <Link
-                to="/about"
-                className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md"
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md"
-              >
-                Contact
-              </Link>
             </div>
           </div>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-            <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-              <div className="sm:text-center lg:text-left">
-                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                  <span className="block xl:inline">Welcome to</span>
-                  <span className="block text-indigo-600 xl:inline">SocialApp</span>
-                </h1>
-                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                  Connect with friends, share your moments, and discover amazing content. Join our community today!
-                </p>
-                <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                  {user ? (
-                    <div className="rounded-md shadow">
-                      <Link
-                        to="/home"
-                        className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
-                      >
-                        Go to Dashboard
-                      </Link>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="rounded-md shadow">
-                        <Link
-                          to="/register"
-                          className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
-                        >
-                          Get started
-                        </Link>
-                      </div>
-                      <div className="mt-3 sm:mt-0 sm:ml-3">
-                        <Link
-                          to="/login"
-                          className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
-                        >
-                          Sign in
-                        </Link>
-                      </div>
-                    </>
-                  )}
-                </div>
+      <section className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+          <div className="text-center">
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+              Share Your
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600"> Stories</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Create, publish, and grow your audience with the most intuitive blogging platform designed for writers who want to focus on what matters most.
+            </p>
+            {!user && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  to="/register"
+                  className="bg-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  Start Writing Today
+                </Link>
+                <Link
+                  to="/login"
+                  className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full text-lg font-semibold hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
+                >
+                  Sign In
+                </Link>
               </div>
-            </main>
+            )}
           </div>
         </div>
-        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <img
-            className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
-            src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80"
-            alt="Social media illustration"
-          />
-        </div>
-      </div>
+      </section>
+
+      {/* Stats Section */}
+      
 
       {/* Features Section */}
-      <div className="py-12 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center">
-            <h2 className="text-base text-indigo-600 font-semibold tracking-wide uppercase">Features</h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Everything you need to connect
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              Everything You Need to
+              <span className="text-indigo-600"> Blog</span>
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Professional tools and features designed to help you create compelling content and build your audience.
             </p>
           </div>
 
-          <div className="mt-10">
-            <dl className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-              <div className="relative">
-                <dt>
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.25m13.5-11.25L12 12l-4.5-4.5" />
-                    </svg>
-                  </div>
-                  <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Share Moments</p>
-                </dt>
-                <dd className="mt-2 ml-16 text-base text-gray-500">
-                  Share your thoughts, photos, and experiences with your network instantly.
-                </dd>
-              </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            
 
-              <div className="relative">
-                <dt>
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                  <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Connect Friends</p>
-                </dt>
-                <dd className="mt-2 ml-16 text-base text-gray-500">
-                  Build meaningful connections and stay in touch with friends and family.
-                </dd>
-              </div>
+            
 
-              <div className="relative">
-                <dt>
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                    </svg>
-                  </div>
-                  <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Real-time Chat</p>
-                </dt>
-                <dd className="mt-2 ml-16 text-base text-gray-500">
-                  Engage in conversations with instant messaging and real-time interactions.
-                </dd>
+            <div className="group p-8 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-200">
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors duration-300">
+                <Users className="h-6 w-6 text-indigo-600 group-hover:text-white" />
               </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Community Building</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Connect with fellow writers, engage with readers through comments, and build a loyal following around your content.
+              </p>
+            </div>
 
-              <div className="relative">
-                <dt>
-                  <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </div>
-                  <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Discover Content</p>
-                </dt>
-                <dd className="mt-2 ml-16 text-base text-gray-500">
-                  Explore trending topics, discover new interests, and stay updated with the world.
-                </dd>
+            <div className="group p-8 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-200">
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors duration-300">
+                <BookOpen className="h-6 w-6 text-indigo-600 group-hover:text-white" />
               </div>
-            </dl>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Content Organization</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Organize your posts with tags, categories, and collections. Create series and manage drafts effortlessly.
+              </p>
+            </div>
+
+            <div className="group p-8 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-200">
+              <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mb-6 group-hover:bg-indigo-600 transition-colors duration-300">
+                <MessageCircle className="h-6 w-6 text-indigo-600 group-hover:text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Reader Engagement</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Foster meaningful discussions with built-in commenting system, reactions, and newsletter subscription tools.
+              </p>
+            </div>
+
+            
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-gradient-to-r from-indigo-600 to-purple-600 py-20">
+        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            Ready to Share Your Voice?
+          </h2>
+          <p className="text-xl text-indigo-100 mb-10 leading-relaxed">
+            Join thousands of writers who trust Blogify to share their stories with the world. Start your blogging journey today.
+          </p>
+          {!user && (
+            <Link
+              to="/register"
+              className="inline-block bg-white text-indigo-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+            >
+              Create Your Blog Now
+            </Link>
+          )}
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-center space-x-6">
-            <Link to="/about" className="text-gray-400 hover:text-gray-500">
-              About
-            </Link>
-            <Link to="/contact" className="text-gray-400 hover:text-gray-500">
-              Contact
-            </Link>
-            {user ? (
-              <>
-                <Link to="/home" className="text-gray-400 hover:text-gray-500">
-                  Home
-                </Link>
-                <button 
-                  onClick={handleLogout}
-                  className="text-gray-400 hover:text-gray-500"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="text-gray-400 hover:text-gray-500">
-                  Login
-                </Link>
-                <Link to="/register" className="text-gray-400 hover:text-gray-500">
-                  Register
-                </Link>
-              </>
-            )}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2 mb-4">
+                <PenTool className="h-6 w-6 text-indigo-400" />
+                <span className="text-xl font-bold">Blogify</span>
+              </div>
+              <p className="text-gray-400 leading-relaxed">
+                The modern blogging platform for writers who want to focus on creating amazing content.
+              </p>
+            </div>
+            
+            
+            <div>
+              <h4 className="font-semibold mb-4">Account</h4>
+              <ul className="space-y-2 text-gray-400">
+                {user ? (
+                  <li><Link to="/home" className="hover:text-white transition-colors">Dashboard</Link></li>
+                ) : (
+                  <>
+                    <li><Link to="/login" className="hover:text-white transition-colors">Sign In</Link></li>
+                    <li><Link to="/register" className="hover:text-white transition-colors">Sign Up</Link></li>
+                  </>
+                )}
+              </ul>
+            </div>
           </div>
-          <p className="mt-8 text-center text-base text-gray-400">
-            &copy; 2024 SocialApp. All rights reserved.
-          </p>
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+            <p>&copy; 2025 Blogify. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </div>

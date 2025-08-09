@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MoreVertical, Edit3, Trash2 } from 'lucide-react';
 
-const PostMenu = ({ postId, onEdit, onDelete }) => {
+const PostMenu = ({ post, onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -17,7 +17,7 @@ const PostMenu = ({ postId, onEdit, onDelete }) => {
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
           <button
             onClick={() => {
-              onEdit(postId);
+              onEdit(post);
               setIsOpen(false);
             }}
             className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -27,7 +27,7 @@ const PostMenu = ({ postId, onEdit, onDelete }) => {
           </button>
           <button
             onClick={() => {
-              onDelete(postId);
+              onDelete(post);
               setIsOpen(false);
             }}
             className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"

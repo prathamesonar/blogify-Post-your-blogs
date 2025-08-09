@@ -11,6 +11,7 @@ import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import SettingsPage from './pages/SettingsPage';
 import MyPostsPage from './pages/MyPostsPage';
+import UserProfilePage from './pages/UserProfilePage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -95,6 +96,16 @@ function App() {
               <ProtectedRoute>
                 <AuthenticatedLayout>
                   <MyPostsPage />
+                </AuthenticatedLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/:username"
+            element={
+              <ProtectedRoute>
+                <AuthenticatedLayout>
+                  <UserProfilePage />
                 </AuthenticatedLayout>
               </ProtectedRoute>
             }

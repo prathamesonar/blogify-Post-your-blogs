@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import authService from '../services/authService';
+import { getUserByUsername } from '../services/userService';
 
 const AuthContext = createContext();
 
@@ -15,15 +16,29 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const refreshUserData = async (username) => {
+    try {
+      const latest = await getUserByUsername(username);
+      if (latest?.user) {
+        setUser(latest.user);
+        localStorage.setItem('user', JSON.stringify(latest.user));
+      }
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+    }
+  };
+
   useEffect(() => {
-    // Check if user is logged in on app load
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
-    
+
     if (storedUser && token) {
       try {
         const userData = JSON.parse(storedUser);
         setUser(userData);
+
+        // Always fetch fresh user data from backend
+        refreshUserData(userData.username);
       } catch (error) {
         console.error('Error parsing stored user:', error);
         localStorage.removeItem('user');
@@ -36,12 +51,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const response = await authService.login(credentials);
-      const userData = response.data;
-      
-      // Store user data and token
+      const userData = response;
+
       localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', response.data.token || 'authenticated');
-      
+      localStorage.setItem('token', userData.token || 'authenticated');
+
       setUser(userData);
       return userData;
     } catch (error) {
@@ -58,12 +72,11 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       const response = await authService.register(userData);
-      const newUser = response.data;
-      
-      // Store user data and token
+      const newUser = response;
+
       localStorage.setItem('user', JSON.stringify(newUser));
-      localStorage.setItem('token', response.data.token || 'authenticated');
-      
+      localStorage.setItem('token', newUser.token || 'authenticated');
+
       setUser(newUser);
       return newUser;
     } catch (error) {
@@ -77,6 +90,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     register,
+    refreshUserData,
     loading,
   };
 

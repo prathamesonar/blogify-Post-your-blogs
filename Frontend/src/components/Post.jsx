@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share2 } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Send } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 import PostMenu from './PostMenu';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,87 +20,151 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-lg border border-gray-100 p-6 mb-6 hover:shadow-xl transition-all duration-300">
+      {/* Post Header */}
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
-          <img
-            src={post.user?.profilePic || '/default-avatar.png'}
-            alt={post.user?.name}
-            className="w-10 h-10 rounded-full mr-3"
-          />
+          <Link to={`/profile/${post.user?.username}`}>
+            <div className="relative group">
+              <img
+                src={post.user?.profilePic || '/default-avatar.png'}
+                alt={post.user?.name}
+                className="w-12 h-12 rounded-2xl mr-4 cursor-pointer group-hover:scale-105 transition-transform duration-200 shadow-md"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+            </div>
+          </Link>
           <div>
-            <h3 className="font-semibold text-gray-900">{post.user?.name}</h3>
-            <p className="text-sm text-gray-500">@{post.user?.username}</p>
+            <Link to={`/profile/${post.user?.username}`}>
+              <h3 className="font-bold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors duration-200 text-lg">
+                {post.user?.name}
+              </h3>
+            </Link>
+            <p className="text-sm text-gray-500 font-medium">@{post.user?.username}</p>
+            <p className="text-xs text-gray-400 mt-1">
+              {post.createdAt ? formatDistanceToNow(new Date(post.createdAt), { addSuffix: true }) : ''}
+            </p>
           </div>
         </div>
         {isOwner && (
           <PostMenu 
-            postId={post._id} 
+            post={post} 
             onEdit={onEdit} 
             onDelete={onDelete} 
           />
         )}
       </div>
       
-      <p className="text-gray-800 mb-3">{post.text}</p>
+      {/* Post Content */}
+      <div className="mb-4">
+        <p className="text-gray-800 leading-relaxed text-lg mb-4">{post.text}</p>
+        
+        {post.image && (
+          <div className="relative group">
+            <img 
+              src={post.image} 
+              alt="Post" 
+              className="w-full rounded-2xl mb-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        )}
+      </div>
       
-      {post.image && (
-        <img 
-          src={post.image} 
-          alt="Post" 
-          className="w-full rounded-lg mb-3"
-        />
-      )}
-      
-      <div className="flex items-center justify-between text-gray-500">
-        <div className="flex items-center space-x-4">
+      {/* Post Actions */}
+      <div className="flex items-center justify-between text-gray-500 py-3 border-t border-gray-100">
+        <div className="flex items-center space-x-8">
           <button 
             onClick={() => onLike(post._id)}
-            className={`flex items-center space-x-1 ${isLiked ? 'text-red-500' : 'text-gray-500'}`}
+            className={`flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-red-50 group ${
+              isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+            }`}
           >
-            <Heart size={20} fill={isLiked ? 'currentColor' : 'none'} />
-            <span>{post.likes?.length || 0}</span>
+            <Heart 
+              size={20} 
+              fill={isLiked ? 'currentColor' : 'none'} 
+              className="group-hover:scale-110 transition-transform duration-200"
+            />
+            <span className="font-medium">{post.likes?.length || 0}</span>
           </button>
           
           <button 
             onClick={() => setShowComments(!showComments)}
-            className="flex items-center space-x-1"
+            className="flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-blue-50 hover:text-blue-500 group"
           >
-            <MessageCircle size={20} />
-            <span>{post.comments?.length || 0}</span>
+            <MessageCircle 
+              size={20}
+              className="group-hover:scale-110 transition-transform duration-200"
+            />
+            <span className="font-medium">{post.comments?.length || 0}</span>
           </button>
           
-          <button className="flex items-center space-x-1">
-            <Share2 size={20} />
+          <button className="flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-green-50 hover:text-green-500 group">
+            <Share2 
+              size={20}
+              className="group-hover:scale-110 transition-transform duration-200"
+            />
           </button>
         </div>
       </div>
       
+      {/* Comments Section */}
       {showComments && (
-        <div className="mt-4 pt-4 border-t">
-          <div className="space-y-3">
-            {post.comments?.map((comment, index) => (
-              <div key={index} className="bg-gray-50 p-3 rounded-md">
-                <p className="text-sm font-semibold">{comment.user?.name || 'User'}</p>
-                <p className="text-sm text-gray-700">{comment.text}</p>
-              </div>
-            ))}
-          </div>
+        <div className="mt-6 pt-6 border-t border-gray-100">
+          {/* Existing Comments */}
+          {post.comments && post.comments.length > 0 && (
+            <div className="space-y-4 mb-6">
+              {post.comments.map((comment, index) => (
+                <div 
+                  key={index} 
+                  className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-2xl border border-gray-100 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                      <span className="text-white text-sm font-bold">
+                        {(comment.user?.name || 'User').charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-gray-900 mb-1">
+                        {comment.user?.name || 'User'}
+                      </p>
+                      <p className="text-gray-700 leading-relaxed">{comment.text}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           
-          <div className="mt-3">
-            <textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Write a comment..."
-              className="w-full p-2 border border-gray-300 rounded-md"
-              rows="2"
-            />
-            <button
-              onClick={handleComment}
-              className="mt-2 px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Post Comment
-            </button>
+          {/* Add Comment */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-2xl border border-blue-100">
+            <div className="flex space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                <span className="text-white font-bold">
+                  {(user?.name || 'You').charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1">
+                <textarea
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  placeholder="Write a thoughtful comment..."
+                  className="w-full p-3 bg-white border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-500 resize-none"
+                  rows="3"
+                />
+                <div className="flex justify-end mt-3">
+                  <button
+                    onClick={handleComment}
+                    disabled={!commentText.trim()}
+                    className="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center"
+                  >
+                    <Send className="h-4 w-4 mr-2 group-hover:translate-x-0.5 transition-transform duration-200" />
+                    Post Comment
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

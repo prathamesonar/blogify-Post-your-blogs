@@ -1,40 +1,153 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, Send, MessageCircle, Clock, Users } from 'lucide-react';
+import Header from '../components/Header'; // ✅ Added
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Contact form submitted:', formData);
+    // Handle form submission here
+    alert('Thank you for your message! We will get back to you soon.');
+    setFormData({ name: '', email: '', subject: '', message: '' });
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-900 mb-6">Contact Us</h1>
-      
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Get in Touch</h2>
-        <p className="text-gray-600 mb-4">
-          We'd love to hear from you! Whether you have a question, feedback, or just want to say hello, we're here to help.
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Contact Information</h3>
-            <ul className="space-y-2 text-gray-600">
-              <li>Email: <a href="mailto:info@socialapp.com" className="text-blue-600 hover:text-blue-800">info@socialapp.com</a></li>
-              <li>Phone: +1 (555) 123-4567</li>
-              <li>Address: 123 Social Street, Social City, SC 12345</li>
-            </ul>
-          </div>
-          
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Contact Form</h3>
-            <p className="text-gray-600">
-              Ready to start your journey with SocialApp? Sign up today and become part of our growing community!
-            </p>
-          </div>
-        </div>
-        
-        <div className="mt-8">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Get in Touch</h3>
-          <p className="text-gray-600">
-            Ready to start your journey with SocialApp? Sign up today and become part of our growing community!
+    <div className="min-h-screen bg-gray-50">
+      <Header /> {/* ✅ Header added here */}
+
+      {/* Hero Section */}
+      <div className="bg-gradient-to-br from-indigo-600 to-purple-700 text-white py-20">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-5xl font-bold mb-6">Get in Touch</h1>
+          <p className="text-xl text-indigo-100 max-w-2xl mx-auto">
+            Have questions about Blogify? We're here to help you create amazing content and grow your audience.
           </p>
         </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-16">
+        <div className="grid lg:grid-cols-3 gap-12">
+          {/* Contact Information */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 h-fit">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Contact Information</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-6 w-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-1">Email Us</h3>
+                    
+                    <a href="mailto:hello@blogify.com" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                      hello@blogify.com
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="h-6 w-6 text-indigo-600" />
+                  </div>
+                  <div>
+                    
+                    <button className="text-indigo-600 hover:text-indigo-700 font-medium">
+                      Start a conversation
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  
+                  
+                </div>
+              </div>
+
+              
+            </div>
+          </div>
+
+          {/* Contact Form */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
+              
+              <div className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                </div>
+
+                
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    rows={6}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                    placeholder="Tell us how we can help you..."
+                  />
+                </div>
+
+                <button
+                  onClick={handleSubmit}
+                  className="w-full bg-indigo-600 text-white px-6 py-4 rounded-xl font-semibold hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center space-x-2"
+                >
+                  <Send className="h-5 w-5" />
+                  <span>Send Message</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+
+        
       </div>
     </div>
   );

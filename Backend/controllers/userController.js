@@ -22,8 +22,16 @@ const registerUser = async (req, res) => {
     const user = await User.create({ name, username, email, password: finalPassword, role });
 
     if (user) {
-      generateToken(res, user._id);
-      res.status(201).json({ _id: user._id, name: user.name, username: user.username, email: user.email, role: user.role });
+      const token = generateToken(res, user._id);
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        bio: user.bio || "",
+        token
+      });
     } else {
       res.status(400).json({ message: 'Invalid user data' });
     }
@@ -34,13 +42,20 @@ const registerUser = async (req, res) => {
 
 // Login user
 const loginUser = async (req, res) => {
-    // This function remains the same as the previous version
     const { loginIdentifier, password } = req.body;
     try {
         const user = await User.findOne({ $or: [{ email: loginIdentifier }, { username: loginIdentifier }] });
         if (user && (await user.matchPassword(password))) {
-            generateToken(res, user._id);
-            res.status(200).json({ _id: user._id, name: user.name, username: user.username, email: user.email, role: user.role });
+            const token = generateToken(res, user._id);
+            res.status(200).json({
+                _id: user._id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                bio: user.bio || "",
+                token
+            });
         } else {
             res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -76,12 +91,26 @@ const followUnfollowUser = async (req, res) => {
             // Unfollow user
             await User.findByIdAndUpdate(req.user._id, { $pull: { following: req.params.id } });
             await User.findByIdAndUpdate(req.params.id, { $pull: { followers: req.user._id } });
-            res.status(200).json({ message: "User unfollowed successfully" });
+            
+            // Get updated user data
+            const updatedUser = await User.findById(req.params.id);
+            res.status(200).json({ 
+                message: "User unfollowed successfully",
+                isFollowing: false,
+                followersCount: updatedUser.followers.length
+            });
         } else {
             // Follow user
             await User.findByIdAndUpdate(req.user._id, { $push: { following: req.params.id } });
             await User.findByIdAndUpdate(req.params.id, { $push: { followers: req.user._id } });
-            res.status(200).json({ message: "User followed successfully" });
+            
+            // Get updated user data
+            const updatedUser = await User.findById(req.params.id);
+            res.status(200).json({ 
+                message: "User followed successfully",
+                isFollowing: true,
+                followersCount: updatedUser.followers.length
+            });
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -130,6 +159,38 @@ const searchUsers = async (req, res) => {
     }
 };
 
+// Get user by username
+const getUserByUsername = async (req, res) => {
+    try {
+        const { username } = req.params;
+        
+        // Find user by username
+        const user = await User.findOne({ username: username.toLowerCase() })
+            .select('-password')
+            .populate('followers', 'name username')
+            .populate('following', 'name username');
+            
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Get user's posts
+        const posts = await Post.find({ user: user._id })
+            .populate('user', 'name username')
+            .sort({ createdAt: -1 });
+        
+        res.json({
+            user,
+            posts,
+            followersCount: user.followers.length,
+            followingCount: user.following.length,
+            postsCount: posts.length
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const deleteAccount = async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
@@ -150,4 +211,30 @@ const deleteAccount = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, logoutUser, followUnfollowUser, changePassword, searchUsers, deleteAccount };
+const updateBio = async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { bio } = req.body;
+  
+      if (typeof bio !== 'string') {
+        return res.status(400).json({ message: 'Invalid bio format' });
+      }
+  
+      const user = await User.findById(userId).select('-password');
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      user.bio = bio;
+      await user.save();
+  
+      res.status(200).json({
+        message: 'Bio updated successfully',
+        user // send the updated user object
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+module.exports = { registerUser, loginUser, logoutUser, followUnfollowUser, changePassword, searchUsers, getUserByUsername, deleteAccount, updateBio };

@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { getMyPosts } from '../services/postService';
+import { getMyPosts, updatePost, deletePost, likePost, commentOnPost } from '../services/postService';
+import { updateUserBio } from '../services/userService';
 import Post from '../components/Post';
+import EditPostModal from '../components/EditPostModal';
+import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
+import EditBioModal from '../components/EditBioModal';
 import { useAuth } from '../context/AuthContext';
 
 const MyPostsPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
+  const [editingPost, setEditingPost] = useState(null);
+  const [deletingPost, setDeletingPost] = useState(null);
+  const [editingBio, setEditingBio] = useState(false);
+  const { user, setUser } = useAuth(); // added setUser for bio update
 
   const fetchUserPosts = async () => {
     try {
       setLoading(true);
       const userPosts = await getMyPosts();
-      // Ensure we always set an array, even if response is not an array
       setPosts(Array.isArray(userPosts) ? userPosts : []);
     } catch (err) {
       setError('Failed to fetch your posts');
       console.error(err);
-      setPosts([]); // Reset to empty array on error
+      setPosts([]);
     } finally {
       setLoading(false);
     }
@@ -29,15 +35,85 @@ const MyPostsPage = () => {
   }, []);
 
   const handlePostUpdate = (updatedPost) => {
-    setPosts(prevPosts => 
-      prevPosts.map(post => 
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
         post._id === updatedPost._id ? updatedPost : post
       )
     );
   };
 
+  const handleLike = async (postId) => {
+    try {
+      const updatedPost = await likePost(postId);
+      handlePostUpdate(updatedPost);
+    } catch (error) {
+      console.error('Error liking post:', error);
+    }
+  };
+
+  const handleComment = async (postId, commentText) => {
+    try {
+      const updatedPost = await commentOnPost(postId, { text: commentText });
+      handlePostUpdate(updatedPost);
+    } catch (error) {
+      console.error('Error commenting on post:', error);
+    }
+  };
+
   const handlePostDelete = (postId) => {
     setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
+  };
+
+  const handleEdit = (post) => {
+    setEditingPost(post);
+  };
+
+  const handleDelete = (post) => {
+    setDeletingPost(post);
+  };
+
+  const handleSaveEdit = async (updatedData) => {
+    try {
+      if (!editingPost || !editingPost._id) {
+        console.error('Invalid post data for edit:', editingPost);
+        alert(`Invalid post data for edit: ${editingPost ? JSON.stringify(editingPost) : 'null/undefined'}`);
+        return;
+      }
+      const postId = editingPost._id.toString();
+      if (!postId || typeof postId !== 'string') {
+        console.error('Invalid post ID format:', postId);
+        alert('Invalid post ID format. Please refresh and try again.');
+        return;
+      }
+      const updatedPost = await updatePost(postId, updatedData);
+      handlePostUpdate(updatedPost);
+      setEditingPost(null);
+    } catch (error) {
+      console.error('Error updating post:', error);
+      alert(`Failed to update post: ${error.message || 'Please try again.'}`);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      if (!deletingPost || !deletingPost._id) {
+        console.error('Invalid post data for delete:', deletingPost);
+        alert(`Invalid post data for delete: ${deletingPost ? JSON.stringify(deletingPost) : 'null/undefined'}`);
+        return;
+      }
+      const postId = deletingPost._id.toString();
+      if (!postId || typeof postId !== 'string') {
+        console.error('Invalid post ID format:', postId);
+        alert('Invalid post ID format. Please refresh and try again.');
+        return;
+      }
+      await deletePost(postId);
+      handlePostDelete(postId);
+      setDeletingPost(null);
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert(`Failed to delete post: ${error.message || 'Please try again.'}`);
+    }
   };
 
   if (loading) {
@@ -52,7 +128,7 @@ const MyPostsPage = () => {
     return (
       <div className="text-center text-red-500 p-8">
         <p>{error}</p>
-        <button 
+        <button
           onClick={fetchUserPosts}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
@@ -64,25 +140,144 @@ const MyPostsPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Posts</h1>
-      
-      {posts.length === 0 ? (
-        <div className="text-center text-gray-500 py-12">
-          <p className="text-xl mb-4">You haven't created any posts yet.</p>
-          <p>Start sharing your thoughts with the community!</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {posts.map(post => (
-            <Post 
-              key={post._id} 
-              post={post} 
-              onUpdate={handlePostUpdate}
-              onDelete={handlePostDelete}
-            />
-          ))}
-        </div>
+      <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+
+      {user && (
+       <div className="bg-white rounded-3xl shadow-xl p-8 mb-12 border border-gray-100 backdrop-blur-sm">
+       <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
+         {/* Profile Picture */}
+         <div className="relative">
+           <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 p-1">
+             <img
+               src={user.profilePic || '/default-avatar.png'}
+               alt={user.name}
+               className="w-full h-full rounded-full object-cover bg-white"
+             />
+           </div>
+           <div className="absolute -bottom-2 -right-2 bg-green-500 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center">
+             <div className="w-2 h-2 bg-white rounded-full"></div>
+           </div>
+         </div>
+     
+         {/* Profile Info */}
+         <div className="flex-1">
+           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+             <div>
+               <h2 className="text-3xl font-bold text-gray-900 mb-1">{user.name}</h2>
+               <p className="text-indigo-600 font-medium text-lg">@{user.username}</p>
+             </div>
+             <button
+               onClick={() => setEditingBio(true)}
+               className="inline-flex items-center space-x-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full font-medium hover:bg-indigo-200 transition-all duration-200 mt-3 sm:mt-0 group"
+             >
+               <svg className="h-4 w-4 group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+               </svg>
+               <span>{user.bio ? 'Edit Bio' : 'Add Bio'}</span>
+             </button>
+           </div>
+     
+           <p className="text-gray-700 mb-6 text-lg leading-relaxed max-w-2xl">
+             {user.bio || (
+               <span className="text-gray-500 italic">
+                 No bio available. Click "Add Bio" to tell your story!
+               </span>
+             )}
+           </p>
+     
+           {/* Stats */}
+           <div className="grid grid-cols-3 gap-6">
+             <div className="text-center group cursor-pointer">
+               <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-4 group-hover:from-blue-100 group-hover:to-indigo-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
+                 <svg className="h-6 w-6 text-indigo-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                 </svg>
+                 <div className="text-2xl font-bold text-gray-900">{posts.length}</div>
+                 <div className="text-sm text-gray-600 font-medium">Posts</div>
+               </div>
+             </div>
+             
+             <div className="text-center group cursor-pointer">
+               <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl p-4 group-hover:from-purple-100 group-hover:to-pink-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
+                 <svg className="h-6 w-6 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                 </svg>
+                 <div className="text-2xl font-bold text-gray-900">{user.followers?.length || 0}</div>
+                 <div className="text-sm text-gray-600 font-medium">Followers</div>
+               </div>
+             </div>
+             
+             <div className="text-center group cursor-pointer">
+               <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-4 group-hover:from-green-100 group-hover:to-emerald-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
+                 <svg className="h-6 w-6 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                 </svg>
+                 <div className="text-2xl font-bold text-gray-900">{user.following?.length || 0}</div>
+                 <div className="text-sm text-gray-600 font-medium">Following</div>
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
       )}
+
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold mb-4">My Posts</h3>
+        {posts.length === 0 ? (
+          <div className="text-center text-gray-500 py-12">
+            <p className="text-xl mb-4">You haven't created any posts yet.</p>
+            <p>Start sharing your thoughts with the community!</p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {posts.map(post => (
+              <Post
+                key={post._id}
+                post={post}
+                onUpdate={handlePostUpdate}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+                onLike={handleLike}
+                onComment={handleComment}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      <EditPostModal
+        isOpen={!!editingPost}
+        onClose={() => setEditingPost(null)}
+        post={editingPost}
+        onSave={handleSaveEdit}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={!!deletingPost}
+        onClose={() => setDeletingPost(null)}
+        post={deletingPost}
+        onConfirm={handleConfirmDelete}
+      />
+
+      <EditBioModal
+        isOpen={editingBio}
+        onClose={() => setEditingBio(false)}
+        currentBio={user?.bio || ''}
+        onSave={async (newBio) => {
+          try {
+            const updated = await updateUserBio(newBio);
+            if (updated?.user) {
+              setUser(updated.user);
+              localStorage.setItem('user', JSON.stringify(updated.user)); // ✅ keep after refresh
+            }
+            setEditingBio(false);
+          } catch (error) {
+            console.error('Error updating bio:', error);
+            alert('Failed to update bio. Please try again.');
+          }
+        }}
+      />
     </div>
   );
 };
