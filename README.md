@@ -13,7 +13,7 @@
 - 🔍 Full-text search  
 - 🌙 Light/Dark mode toggle  
 - 📱 Mobile-responsive design  
-- 🛠️ Admin dashboard (optional)
+- 🛠️ Admin dashboard 
 
 ---
 
