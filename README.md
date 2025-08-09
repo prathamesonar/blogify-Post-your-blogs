@@ -1,6 +1,6 @@
 # 📝 Blogify Web
 
-**Blogify Web** is a modern, responsive blogging platform designed to make writing, managing, and sharing content effortless. Whether you're a casual writer or a professional blogger, Blogify provides the tools you need to publish with ease.
+**Blogify Web** is a modern, responsive blogging platform designed to make writing, managing. Whether you're a casual writer or a professional blogger, Blogify provides the tools you need to publish with ease.
 
 ---
 
