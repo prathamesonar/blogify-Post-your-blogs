@@ -12,6 +12,8 @@ import ContactPage from './pages/ContactPage';
 import SettingsPage from './pages/SettingsPage';
 import MyPostsPage from './pages/MyPostsPage';
 import UserProfilePage from './pages/UserProfilePage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
+// AdminLoginPage removed - using regular login for all users
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -20,6 +22,15 @@ const ProtectedRoute = ({ children }) => {
     return <div className="text-center mt-10">Loading...</div>;
   }
   return user ? children : <Navigate to="/login" replace />;
+};
+
+// Admin Protected Route Component
+const AdminProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return <div className="text-center mt-10">Loading...</div>;
+  }
+  return user && user.role === 'admin' ? children : <Navigate to="/login" replace />;
 };
 
 // Public Route Component (redirects to home if logged in)
@@ -108,6 +119,15 @@ function App() {
                   <UserProfilePage />
                 </AuthenticatedLayout>
               </ProtectedRoute>
+            }
+          />
+          {/* Admin login route removed - using regular login page */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AdminProtectedRoute>
+                <AdminDashboardPage />
+              </AdminProtectedRoute>
             }
           />
         </Routes>

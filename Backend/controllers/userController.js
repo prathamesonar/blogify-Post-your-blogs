@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const Post = require('../models/postModel');
 const generateToken = require('../utils/generateToken');
+require('dotenv').config();
 
 // Register user
 const registerUser = async (req, res) => {
@@ -14,9 +15,15 @@ const registerUser = async (req, res) => {
     // Admin user creation logic
     let role = 'user';
     let finalPassword = password;
-    if (email === 'prathameshsonar170@gmail.com') {
+    
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    // Check if the user is the admin
+    if ((email === adminEmail && username === adminUsername)) {
       role = 'admin';
-      finalPassword = 'prathamesh170@';
+      finalPassword = adminPassword; // Use admin password from env
     }
 
     const user = await User.create({ name, username, email, password: finalPassword, role });
@@ -60,6 +67,7 @@ const loginUser = async (req, res) => {
             res.status(401).json({ message: 'Invalid credentials' });
         }
     } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: error.message });
     }
 };

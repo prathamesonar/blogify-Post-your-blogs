@@ -1,0 +1,77 @@
+/* Keep your existing styles */
+.rich-editor-container .ql-container {
+    font-size: 14px;
+    min-height: 120px;
+  }
+  
+  .rich-editor-container .ql-editor {
+    min-height: 120px;
+    padding: 12px;
+    line-height: 1.5;
+  
+    /* Make editor scrollable for long posts */
+    max-height: 300px; /* Adjust as needed */
+    overflow-y: auto;
+  }
+  
+  .rich-editor-container .ql-toolbar {
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+  
+    /* Optional: keep toolbar visible while scrolling */
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .rich-editor-container .ql-container.ql-snow {
+    border-bottom-left-radius: 0.375rem;
+    border-bottom-right-radius: 0.375rem;
+    border-color: #d1d5db;
+  }
+  
+  .rich-editor-container .ql-editor.ql-blank::before {
+    color: #9ca3af;
+    font-style: normal;
+  }
+  
+  /* Custom toolbar styling */
+  .rich-editor-container .ql-toolbar button:hover {
+    background-color: #e5e7eb;
+  }
+  
+  .rich-editor-container .ql-toolbar button.ql-active {
+    background-color: #dbeafe;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .rich-editor-container .ql-toolbar {
+      padding: 4px;
+    }
+    
+    .rich-editor-container .ql-toolbar button {
+      width: 24px;
+      height: 24px;
+    }
+  }
+  
+  /* Emoji picker styling */
+  .ql-emoji-container {
+    z-index: 1000;
+  }
+  
+  .ql-emoji-container .emoji-picker {
+    border-radius: 0.375rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  .rich-editor-container .ql-editor {
+    height: 200px; /* Fixed height */
+    max-height: 200px; /* Prevents growing beyond this */
+    overflow-y: auto;  /* Scroll if content exceeds height */
+    padding: 12px;
+    line-height: 1.5;
+  }
+    

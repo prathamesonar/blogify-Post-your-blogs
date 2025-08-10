@@ -90,8 +90,8 @@ const UserProfilePage = () => {
       console.error('Error updating bio:', error);
     }
   };
-  
- 
+
+
 
   // ✅ Hooks are all declared already, so early returns are safe
   if (loading) {
@@ -122,79 +122,88 @@ const UserProfilePage = () => {
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Profile Header */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-  <div className="flex items-center justify-between">
-    <div className="flex items-center space-x-6">
-      <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center">
-        <span className="text-3xl font-bold text-gray-600">
+        <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-6">
+  <div className="relative">
+    {user.profilePic ? (
+      <img
+        className="w-24 h-24 rounded-full object-cover ring-4 ring-gray-100"
+        src={user.profilePic}
+        alt={user.name}
+      />
+    ) : (
+      <div className="w-24 h-24 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center ring-4 ring-gray-100">
+        <span className="text-3xl font-bold text-white">
           {user.name.charAt(0).toUpperCase()}
         </span>
       </div>
-      <div>
-        <h1 className="text-2xl font-bold">{user.name}</h1>
-        <p className="text-gray-600">@{user.username}</p>
-        <p className="text-gray-700 mt-2">{user.email}</p>
-        {user.bio && (
-          <p className="text-gray-700 mt-2 max-w-md">{user.bio}</p>
-        )}
-      </div>
-    </div>
-     
-    <div className="flex items-center space-x-4">
-      {isOwnProfile && (
-        <button
-          onClick={() => setEditingBio(true)}
-          // className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-        >
-          {/* {user.bio ? 'Edit Bio' : 'Add Bio'} */}
-        </button>
-      )}
-      {!isOwnProfile && (
-        <button
-          onClick={handleFollowUnfollow}
-          className={`px-4 py-2 rounded-lg transition-colors ${
-            isFollowing
-              ? 'bg-gray-500 text-white hover:bg-gray-600'
-              : 'bg-blue-500 text-white hover:bg-blue-600'
-          }`}
-        >
-          {isFollowing ? 'Following' : 'Follow'}
-        </button>
-      )}
-    </div>
+    )}
   </div>
-
-  <div className="grid grid-cols-3 gap-6 mt-6">
-    <div className="text-center group cursor-pointer">
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-4 group-hover:from-blue-100 group-hover:to-indigo-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
-        <svg className="h-6 w-6 text-indigo-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <div className="text-2xl font-bold text-gray-900">{postsCount}</div>
-        <div className="text-sm text-gray-600 font-medium">Posts</div>
-      </div>
-    </div>
-    
-    <div className="text-center group cursor-pointer">
-      <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl p-4 group-hover:from-purple-100 group-hover:to-pink-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
-        <svg className="h-6 w-6 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-        <div className="text-2xl font-bold text-gray-900">{followersCount}</div>
-        <div className="text-sm text-gray-600 font-medium">Followers</div>
-      </div>
-    </div>
-    
-    <div className="text-center group cursor-pointer">
-      <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-4 group-hover:from-green-100 group-hover:to-emerald-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
-        <svg className="h-6 w-6 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-        </svg>
-        <div className="text-2xl font-bold text-gray-900">{followingCount}</div>
-        <div className="text-sm text-gray-600 font-medium">Following</div>
-      </div>
-    </div>
+  <div>
+    <h1 className="text-2xl font-bold">{user.name}</h1>
+    <p className="text-gray-600">@{user.username}</p>
+    <p className="text-gray-700 mt-2">{user.email}</p>
+    {user.bio && (
+      <p className="text-gray-700 mt-2 max-w-md">{user.bio}</p>
+    )}
   </div>
 </div>
+
+          <div className="flex items-center space-x-4">
+            {isOwnProfile && (
+              <button
+                onClick={() => setEditingBio(true)}
+              // className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              >
+                {/* {user.bio ? 'Edit Bio' : 'Add Bio'} */}
+              </button>
+            )}
+            {!isOwnProfile && (
+              <button
+                onClick={handleFollowUnfollow}
+                className={`px-4 py-2 rounded-lg transition-colors ${isFollowing
+                    ? 'bg-gray-500 text-white hover:bg-gray-600'
+                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                  }`}
+              >
+                {isFollowing ? 'Following' : 'Follow'}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-6 mt-6">
+          <div className="text-center group cursor-pointer">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-4 group-hover:from-blue-100 group-hover:to-indigo-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
+              <svg className="h-6 w-6 text-indigo-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <div className="text-2xl font-bold text-gray-900">{postsCount}</div>
+              <div className="text-sm text-gray-600 font-medium">Posts</div>
+            </div>
+          </div>
+
+          <div className="text-center group cursor-pointer">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-2xl p-4 group-hover:from-purple-100 group-hover:to-pink-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
+              <svg className="h-6 w-6 text-purple-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <div className="text-2xl font-bold text-gray-900">{followersCount}</div>
+              <div className="text-sm text-gray-600 font-medium">Followers</div>
+            </div>
+          </div>
+
+          <div className="text-center group cursor-pointer">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-4 group-hover:from-green-100 group-hover:to-emerald-200 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-1">
+              <svg className="h-6 w-6 text-green-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+              <div className="text-2xl font-bold text-gray-900">{followingCount}</div>
+              <div className="text-sm text-gray-600 font-medium">Following</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* User's Posts */}
       <div>

@@ -12,10 +12,11 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
 
-  const handleComment = () => {
+  const handleComment = async () => {
     if (commentText.trim()) {
-      onComment(post._id, commentText);
+      await onComment(post._id, commentText); // Wait for backend confirmation
       setCommentText('');
+      setShowComments(false); // Hide comments section after posting
     }
   };
 
@@ -26,11 +27,19 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
         <div className="flex items-center">
           <Link to={`/profile/${post.user?.username}`}>
             <div className="relative group">
-              <img
-                src={post.user?.profilePic || '/default-avatar.png'}
-                alt={post.user?.name}
-                className="w-12 h-12 rounded-2xl mr-4 cursor-pointer group-hover:scale-105 transition-transform duration-200 shadow-md"
-              />
+              {post.user?.profilePic ? (
+                <img
+                  src={post.user.profilePic}
+                  alt={post.user?.name}
+                  className="w-12 h-12 rounded-2xl mr-4 cursor-pointer group-hover:scale-105 transition-transform duration-200 shadow-md object-cover"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-2xl mr-4 cursor-pointer group-hover:scale-105 transition-transform duration-200 shadow-md bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <span className="text-white font-semibold text-lg">
+                    {post.user?.name?.charAt(0).toUpperCase() || 'U'}
+                  </span>
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
             </div>
           </Link>
@@ -41,36 +50,40 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
               </h3>
             </Link>
             <p className="text-sm text-gray-500 font-medium">@{post.user?.username}</p>
-            <p className="text-xs text-gray-400 mt-1">
-              {post.createdAt ? formatDistanceToNow(new Date(post.createdAt), { addSuffix: true }) : ''}
-            </p>
           </div>
         </div>
-        {isOwner && (
-          <PostMenu 
-            post={post} 
-            onEdit={onEdit} 
-            onDelete={onDelete} 
-          />
-        )}
+        <div className="flex items-center space-x-4">
+          <p className="text-xs text-gray-400">
+            {post.createdAt ? formatDistanceToNow(new Date(post.createdAt), { addSuffix: true }) : ''}
+          </p>
+          {isOwner && (
+            <PostMenu 
+              post={post} 
+              onEdit={onEdit} 
+              onDelete={onDelete} 
+            />
+          )}
+        </div>
       </div>
       
       {/* Post Content */}
       <div className="mb-4">
-        <p className="text-gray-800 leading-relaxed text-lg mb-4">{post.text}</p>
+        <div 
+          className="text-gray-800 leading-relaxed text-lg mb-4 prose prose-lg max-w-none max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+          dangerouslySetInnerHTML={{ __html: post.text }}
+        />
         
         {post.image && (
           <div className="relative group">
             <img 
               src={post.image} 
-              alt="Post" 
               className="w-full rounded-2xl mb-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </div>
         )}
       </div>
-      
+
       {/* Post Actions */}
       <div className="flex items-center justify-between text-gray-500 py-3 border-t border-gray-100">
         <div className="flex items-center space-x-8">

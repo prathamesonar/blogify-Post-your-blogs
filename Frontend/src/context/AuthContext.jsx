@@ -20,8 +20,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const latest = await getUserByUsername(username);
       if (latest?.user) {
-        setUser(latest.user);
-        localStorage.setItem('user', JSON.stringify(latest.user));
+        // Preserve the role from the stored user
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const updatedUser = {
+          ...latest.user,
+          role: currentUser.role || latest.user.role || 'user'
+        };
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
       }
     } catch (error) {
       console.error('Failed to refresh user data:', error);
@@ -36,8 +42,6 @@ export const AuthProvider = ({ children }) => {
       try {
         const userData = JSON.parse(storedUser);
         setUser(userData);
-
-        // Always fetch fresh user data from backend
         refreshUserData(userData.username);
       } catch (error) {
         console.error('Error parsing stored user:', error);
