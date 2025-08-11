@@ -215,6 +215,7 @@ const RegisterPage = () => {
                         onChange={onChange}
                         required
                         minLength="6"
+                        autocomplete="new-password"
                       />
                       <button
                         type="button"
