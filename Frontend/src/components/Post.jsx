@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Heart, MessageCircle, Share2, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
@@ -11,6 +11,10 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
   const isOwner = post.user?._id === user?._id;
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
+  
+  // Ref for the comments section
+  const commentsRef = useRef(null);
+  const commentButtonRef = useRef(null);
 
   const handleComment = async () => {
     if (commentText.trim()) {
@@ -19,6 +23,24 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
       setShowComments(false); // Hide comments section after posting
     }
   };
+
+  // Handle click outside to close comments
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showComments && 
+          commentsRef.current && 
+          !commentsRef.current.contains(event.target) &&
+          commentButtonRef.current &&
+          !commentButtonRef.current.contains(event.target)) {
+        setShowComments(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showComments]);
 
   return (
     <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-lg border border-gray-100 p-6 mb-6 hover:shadow-xl transition-all duration-300">
@@ -102,6 +124,7 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
           </button>
           
           <button 
+            ref={commentButtonRef}
             onClick={() => setShowComments(!showComments)}
             className="flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-200 hover:bg-blue-50 hover:text-blue-500 group"
           >
@@ -123,7 +146,7 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
       
       {/* Comments Section */}
       {showComments && (
-        <div className="mt-6 pt-6 border-t border-gray-100">
+        <div ref={commentsRef} className="mt-6 pt-6 border-t border-gray-100">
           {/* Existing Comments */}
           {post.comments && post.comments.length > 0 && (
             <div className="space-y-4 mb-6">

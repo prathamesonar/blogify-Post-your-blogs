@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { useLocation } from 'react-router-dom';
 import { getMyPosts, updatePost, deletePost, likePost, commentOnPost } from '../services/postService';
 import { updateUserBio } from '../services/userService';
 import Post from '../components/Post';
@@ -15,6 +16,7 @@ const MyPostsPage = () => {
   const [deletingPost, setDeletingPost] = useState(null);
   const [editingBio, setEditingBio] = useState(false);
   const { user, setUser } = useAuth();
+  const location = useLocation();
 
   const fetchUserPosts = async () => {
     try {
@@ -32,6 +34,40 @@ const MyPostsPage = () => {
 
   useEffect(() => {
     fetchUserPosts();
+  }, []);
+
+  // Refresh posts when navigating to this page (helps catch new posts)
+  useEffect(() => {
+    // Add a small delay to ensure any pending operations complete
+    const timer = setTimeout(() => {
+      fetchUserPosts();
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
+  // Listen for storage events (when posts are created from other tabs/components)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'postCreated') {
+        fetchUserPosts();
+        localStorage.removeItem('postCreated'); // Clean up
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check for custom events within the same tab
+    const handlePostCreated = () => {
+      fetchUserPosts();
+    };
+
+    window.addEventListener('postCreated', handlePostCreated);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('postCreated', handlePostCreated);
+    };
   }, []);
 
   const handlePostUpdate = (updatedPost) => {
@@ -216,7 +252,15 @@ const MyPostsPage = () => {
 
         {/* Right Column - Posts */}
         <div className="lg:w-2/3">
-          <h3 className="text-xl font-semibold mb-4">My Posts</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold">My Posts</h3>
+            <button
+              onClick={fetchUserPosts}
+              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+            >
+              Refresh
+            </button>
+          </div>
           {posts.length === 0 ? (
             <div className="text-center text-gray-500 py-12">
               <p className="text-xl mb-4">You haven't created any posts yet.</p>

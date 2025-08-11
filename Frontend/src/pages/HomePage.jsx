@@ -101,30 +101,44 @@ const HomePage = () => {
           {/* User Search Bar */}
           <div className="mb-8">
             {/* Search Input */}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                placeholder="Search users by name or username..."
-                value={searchQuery}
-                onChange={handleSearch}
-                className="w-full pl-12 pr-4 py-4 bg-white border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-lg"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              )}
-            </div>
+            <div className="relative group">
+  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-10">
+    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+  </div>
+  
+  <input
+    type="text"
+    placeholder="Search users by name or username..."
+    value={searchQuery}
+    onChange={handleSearch}
+    className="w-full pl-14 pr-12 py-4 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/50 focus:bg-white transition-all duration-300 text-lg font-medium shadow-sm hover:shadow-md hover:border-gray-300 backdrop-blur-sm"
+  />
+  
+  {searchQuery && (
+    <button
+      onClick={() => setSearchQuery('')}
+      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-all duration-200 z-10 hover:scale-110 transform"
+    >
+      <div className="p-1 rounded-full hover:bg-red-50 transition-colors duration-200">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </div>
+    </button>
+  )}
+  
+  {/* Loading indicator when searching */}
+  {searchQuery && (
+    <div className="absolute inset-y-0 right-12 flex items-center pr-2 pointer-events-none">
+      <div className="animate-pulse w-2 h-2 bg-indigo-400 rounded-full"></div>
+    </div>
+  )}
+  
+  {/* Subtle glow effect */}
+  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+</div>
 
             {/* Search Results */}
             {searchResults.length > 0 && (
