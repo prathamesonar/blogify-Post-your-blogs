@@ -94,55 +94,99 @@ const UserProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Profile Header */}
-      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-6">
-            <div>
-                <img
-                    className="w-24 h-24 rounded-full object-cover ring-4 ring-gray-100"
-                    src={user.profilePic || `https://ui-avatars.com/api/?name=${user.name}&background=818cf8&color=fff`}
-                    alt={user.name}
-                />
-            </div>
-            <div>
-                <h1 className="text-2xl font-bold">{user.name}</h1>
-                <p className="text-gray-600">@{user.username}</p>
-                <p className="text-gray-700 mt-2 max-w-md">{user.bio || 'No bio available.'}</p>
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left Column - Profile */}
+        <div className="lg:w-1/3">
+          <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100 backdrop-blur-sm sticky top-8">
+            <div className="flex flex-col items-center text-center">
+              {/* Profile Picture */}
+              <div className="relative mb-4">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 p-1">
+                  {user.profilePic ? (
+                    <img
+                      src={user.profilePic}
+                      alt={user.name}
+                      className="w-full h-full rounded-full object-cover bg-white"
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                      <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-purple-600">
+                        {user.name?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="absolute -bottom-2 -right-2 bg-green-500 w-8 h-8 rounded-full border-4 border-white flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+              </div>
+              
+              {/* Name & Username */}
+              <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
+              <p className="text-indigo-600 font-medium text-lg mb-3">@{user.username}</p>
+              
+              {/* Bio */}
+              <p className="text-gray-700 mb-4 text-lg leading-relaxed">
+                {user.bio || (
+                  <span className="text-gray-500 italic">
+                    No bio available.
+                  </span>
+                )}
+              </p>
+              
+              {/* Follow Button (only shown for non-own profiles) */}
+              {!isOwnProfile && (
+                <button 
+                  onClick={handleFollowUnfollow} 
+                  className={`inline-flex items-center space-x-2 px-6 py-3 rounded-full font-medium transition-all duration-200 mb-6 ${
+                    isFollowing 
+                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
+                >
+                  <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                </button>
+              )}
+              
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-4 mt-6 w-full">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{postsCount}</div>
+                  <div className="text-sm text-gray-600 font-medium">Posts</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{followersCount}</div>
+                  <div className="text-sm text-gray-600 font-medium">Followers</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">{followingCount}</div>
+                  <div className="text-sm text-gray-600 font-medium">Following</div>
+                </div>
+              </div>
             </div>
           </div>
-          {!isOwnProfile && (
-            <button onClick={handleFollowUnfollow} className={`px-4 py-2 rounded-lg transition-colors ${isFollowing ? 'bg-gray-500' : 'bg-indigo-500'} text-white`}>
-              {isFollowing ? 'Following' : 'Follow'}
-            </button>
+        </div>
+
+        {/* Right Column - Posts */}
+        <div className="lg:w-2/3">
+          <h2 className="text-xl font-bold mb-4">Posts</h2>
+          {posts.length > 0 ? (
+            <div className="space-y-6">
+              {posts.map(post => (
+                <Post
+                  key={post._id}
+                  post={post}
+                  onLike={handleLike}
+                  onComment={handleComment}
+                  onDelete={() => setDeletingPost(post)}
+                  onEdit={() => setEditingPost(post)}
+                />
+              ))}
+            </div>
+          ) : (
+            <p>No posts yet.</p>
           )}
         </div>
-        <div className="grid grid-cols-3 gap-6 mt-6">
-            <div className="text-center"><div className="text-2xl font-bold">{postsCount}</div><div className="text-sm">Posts</div></div>
-            <div className="text-center"><div className="text-2xl font-bold">{followersCount}</div><div className="text-sm">Followers</div></div>
-            <div className="text-center"><div className="text-2xl font-bold">{followingCount}</div><div className="text-sm">Following</div></div>
-        </div>
-      </div>
-
-      {/* Posts */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">Posts</h2>
-        {posts.length > 0 ? (
-          <div className="space-y-6">
-            {posts.map(post => (
-              <Post
-                key={post._id}
-                post={post}
-                onLike={handleLike}
-                onComment={handleComment}
-                onDelete={() => setDeletingPost(post)}
-                onEdit={() => setEditingPost(post)}
-              />
-            ))}
-          </div>
-        ) : (
-          <p>No posts yet.</p>
-        )}
       </div>
     </div>
   );
