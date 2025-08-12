@@ -170,29 +170,12 @@ const searchUsers = async (req, res) => {
 // Get user by username
 const getUserByUsername = async (req, res) => {
     try {
-        const { username } = req.params;
-        
-        const user = await User.findOne({ username: username.toLowerCase() })
-            .select('-password')
-            .populate('followers', 'name username')
-            .populate('following', 'name username');
-            
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        
         const posts = await Post.find({ user: user._id })
             .populate('user', 'name username')
             .populate('comments.user', 'name username profilePic') // <-- ADD THIS LINE
             .sort({ createdAt: -1 });
         
-        res.json({
-            user,
-            posts,
-            followersCount: user.followers.length,
-            followingCount: user.following.length,
-            postsCount: posts.length
-        });
+        // ... rest of the function
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
