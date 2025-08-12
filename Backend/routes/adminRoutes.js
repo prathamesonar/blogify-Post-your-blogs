@@ -1,28 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const {
-    getAllUsers,
-    getAllPosts,
-    getDashboardStats,
-    deleteUser,
-    deletePostAdmin,
-    getUserById,
-    getPostById,
-    getSystemAnalytics
-} = require('../controllers/adminController');
+const adminController = require('../controllers/adminController'); // Import the whole controller
 
-// Admin dashboard routes
-router.get('/admin/users', getAllUsers);
-router.get('/admin/posts', getAllPosts);
-router.get('/admin/stats', getDashboardStats);
-router.get('/admin/analytics', getSystemAnalytics);
+// Use the controller methods directly
+router.get('/admin/users', adminController.getAllUsers);
+router.get('/admin/posts', adminController.getAllPosts);
+router.get('/admin/stats', adminController.getDashboardStats);
+router.get('/admin/analytics', adminController.getSystemAnalytics);
 
-// Admin detailed routes
-router.get('/admin/users/:userId', getUserById);
-router.get('/admin/posts/:postId', getPostById);
+router.get('/admin/users/:userId', adminController.getUserById);
+router.get('/admin/posts/:postId', adminController.getPostById);
 
-// Admin delete routes
-router.delete('/admin/users/:userId', deleteUser);
-router.delete('/admin/posts/:postId', deletePostAdmin);
+router.delete('/admin/users/:userId', adminController.deleteUser);
+router.delete('/admin/posts/:postId', adminController.deletePostAdmin);
 
 module.exports = router;
