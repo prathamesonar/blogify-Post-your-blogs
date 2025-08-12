@@ -55,18 +55,12 @@ const HomePage = () => {
     }
   };
 
-  // --- THIS IS THE CORRECTED FUNCTION ---
   const handleComment = async (postId, text) => {
     try {
-      // 1. Call the service and wait for the complete, populated post from the server
       const updatedPostFromServer = await commentOnPost(postId, { text });
-      
-      // 2. Update the state with this new, complete post object
       handlePostUpdate(updatedPostFromServer);
-
     } catch (error) {
       console.error('Error posting comment:', error);
-      // Optionally, show an error message to the user
     }
   };
 
@@ -74,7 +68,7 @@ const HomePage = () => {
     handlePostUpdate(updatedPost);
   };
 
-const handleSearch = async (e) => {
+  const handleSearch = async (e) => {
     const query = e.target.value;
     setSearchQuery(query);
 
@@ -87,8 +81,7 @@ const handleSearch = async (e) => {
         setSearchResults([]);
       }
     } else {
-      // This part clears the results when the input is empty
-      setSearchResults([]); 
+      setSearchResults([]);
     }
   };
 
@@ -104,7 +97,7 @@ const handleSearch = async (e) => {
     <div className="max-w-2xl mx-auto mt-6 px-4">
       {user ? (
         <>
-          {/* User Search Bar */}
+          {/* --- ENHANCED SEARCH BAR --- */}
           <div className="mb-8">
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-10">
@@ -133,6 +126,14 @@ const handleSearch = async (e) => {
                   </div>
                 </button>
               )}
+              
+              {searchQuery && (
+                <div className="absolute inset-y-0 right-12 flex items-center pr-2 pointer-events-none">
+                  <div className="animate-pulse w-2 h-2 bg-indigo-400 rounded-full"></div>
+                </div>
+              )}
+              
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
             </div>
 
             {searchResults.length > 0 && (
@@ -151,7 +152,7 @@ const handleSearch = async (e) => {
                     >
                       <div className="flex items-center space-x-4">
                         <div className="relative">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 p-0.5 group-hover:scale-105 transition-transform duration-200">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 p-0.5 group-hover:scale-10S5 transition-transform duration-200">
                             <img
                               src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=ffffff&size=48`}
                               alt={user.name}
@@ -186,7 +187,7 @@ const handleSearch = async (e) => {
                   key={post._id} 
                   post={post} 
                   onLike={handleLike}
-                  onComment={handleComment} // This now correctly points to the new function
+                  onComment={handleComment}
                   onDelete={handlePostDelete}
                   onEdit={handleEdit}
                 />
