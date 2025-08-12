@@ -1,16 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
-const { registerUser, loginUser, logoutUser, followUnfollowUser, searchUsers, getUserByUsername, changePassword, deleteAccount, updateBio } = require('../controllers/userController');
+const userController = require('../controllers/userController'); // Import the whole controller
 
-router.post('/register', registerUser);
-router.post('/login', loginUser);
-router.post('/logout', logoutUser);
-router.post('/follow/:id', protect, followUnfollowUser);
-router.get('/search', protect, searchUsers);
-router.get('/:username', getUserByUsername);
-router.put('/change-password', protect, changePassword);
-router.put('/update-bio', protect, updateBio);
-router.delete('/delete-account', protect, deleteAccount);
+// Use the controller methods directly
+router.post('/register', userController.registerUser);
+router.post('/login', userController.loginUser);
+router.post('/logout', userController.logoutUser);
+router.post('/follow/:id', protect, userController.followUnfollowUser);
+router.get('/search', protect, userController.searchUsers);
+router.get('/:username', userController.getUserByUsername);
+router.put('/change-password', protect, userController.changePassword);
+router.put('/update-bio', protect, userController.updateBio);
+router.delete('/delete-account', protect, userController.deleteAccount);
 
 module.exports = router;
