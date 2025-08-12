@@ -89,17 +89,15 @@ const MyPostsPage = () => {
 
     const handleComment = async (postId, text) => {
     try {
-      // Make the API call and wait for the server's response
+      // 1. Call the service and wait for the complete, populated post from the server
       const updatedPostFromServer = await commentOnPost(postId, { text });
-
-      // --- THIS IS THE CRUCIAL DEBUGGING STEP ---
-      console.log("Received updated post from server:", updatedPostFromServer);
-      // -----------------------------------------
-
-      // Update the state with the confirmed data from the server
+      
+      // 2. Update the state with this new, complete post object
       handlePostUpdate(updatedPostFromServer);
+
     } catch (error) {
-      console.error('Error commenting on post:', error);
+      console.error('Error posting comment:', error);
+      // Optionally, show an error message to the user
     }
   };
 
