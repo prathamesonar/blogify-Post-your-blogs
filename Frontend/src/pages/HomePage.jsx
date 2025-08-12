@@ -57,42 +57,18 @@ const HomePage = () => {
   };
 
   const handleComment = async (postId, text) => {
-    if (!user) return; // Safety check
-
-    // 1. Create a "fake" comment object immediately with the correct user data.
-    const newComment = {
-      _id: new Date().getTime().toString(), // Use a temporary unique ID
-      user: {
-        _id: user._id,
-        name: user.name,
-        username: user.username,
-        profilePic: user.profilePic,
-      },
-      text: text,
-      createdAt: new Date().toISOString(),
-    };
-
-    // 2. Update the UI "optimistically" with this new comment.
-    setPosts(prevPosts =>
-      prevPosts.map(p => {
-        if (p._id === postId) {
-          // Create a new comments array with the new comment added
-          const updatedComments = [...p.comments, newComment];
-          return { ...p, comments: updatedComments };
-        }
-        return p;
-      })
-    );
-
-    // 3. In the background, send the real request to the server.
     try {
+      // Make the API call and wait for the server's response
       const updatedPostFromServer = await commentOnPost(postId, { text });
-      // 4. Once the server confirms, replace the temporary post with the real one from the server.
-      // This ensures the UI is in sync with the database.
+
+      // --- THIS IS THE CRUCIAL DEBUGGING STEP ---
+      console.log("Received updated post from server:", updatedPostFromServer);
+      // -----------------------------------------
+
+      // Update the state with the confirmed data from the server
       handlePostUpdate(updatedPostFromServer);
     } catch (error) {
-      console.error('Failed to post comment:', error);
-      // Here you could add logic to remove the optimistic comment if the server fails
+      console.error('Error commenting on post:', error);
     }
   };
 
