@@ -74,7 +74,7 @@ const HomePage = () => {
     handlePostUpdate(updatedPost);
   };
 
-  const handleSearch = async (e) => {
+const handleSearch = async (e) => {
     const query = e.target.value;
     setSearchQuery(query);
 
@@ -87,7 +87,8 @@ const HomePage = () => {
         setSearchResults([]);
       }
     } else {
-      setSearchResults([]);
+      // This part clears the results when the input is empty
+      setSearchResults([]); 
     }
   };
 
