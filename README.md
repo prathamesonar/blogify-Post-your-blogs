@@ -12,6 +12,12 @@
 
 ---
 
+## 📸 Project Preview
+
+![Blogify Application Screenshot](https://github.com/user-attachments/assets/3dc1450f-a4c8-4ffd-8d36-9cba116544fa)
+
+---
+
 ## 📖 About The Project
 
 **Blogify** is a full-stack web application designed to provide a seamless and modern blogging experience. It empowers writers to create, manage, and share their stories with a global audience. The platform includes a rich text editor, social features like following, liking, and commenting, and a powerful admin dashboard for site management.
@@ -20,7 +26,7 @@
 
 ## 🚀 Features
 
--   **✍️ Rich Text Editor**: Create engaging posts with a full-featured WYSIWYG editor.
+-   **✍️ Rich Text Editor**: Create beautiful and engaging posts with a full-featured WYSIWYG editor.
 -   **👤 User Authentication**: Secure user registration and login system using JSON Web Tokens (JWT).
 -   **🤝 Social Interactions**: Follow/unfollow users, like posts, and engage in discussions through a nested commenting system.
 -   **🔍 User & Post Search**: Easily find other users or posts with a dynamic search bar.
