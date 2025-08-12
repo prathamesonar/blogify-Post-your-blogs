@@ -75,23 +75,34 @@ const likeUnlikePost = async (req, res) => {
 const commentOnPost = async (req, res) => {
     try {
         const { text } = req.body;
+        if (!text || text.trim() === "") {
+            return res.status(400).json({ message: "Comment cannot be empty" });
+        }
+
         const post = await Post.findById(req.params.id);
         if (!post) {
             return res.status(404).json({ message: "Post not found" });
         }
-        const comment = { user: req.user._id, text };
+
+        const comment = { 
+            user: req.user._id, 
+            text: text 
+        };
+
         post.comments.push(comment);
         await post.save();
         
+        // Crucial Fix: After saving, re-fetch and populate the post
+        // This ensures the new comment includes the user's details.
         const updatedPost = await Post.findById(post._id)
             .populate('user', 'name username profilePic')
-            .populate('comments.user', 'name username profilePic');
+            .populate('comments.user', 'name username profilePic'); 
         
         res.status(200).json(updatedPost);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}; 
+};
 
 // Update a post
 const updatePost = async (req, res) => {
