@@ -202,49 +202,98 @@ const HomePage = () => {
         </main>
 
         {/* --- SIDEBAR (Right Column) --- */}
-        <aside className="hidden lg:block space-y-6 sticky top-24 h-screen">
-          {/* My Profile Widget */}
-          {user && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-              <div className="flex items-center space-x-4">
-                <img src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=818cf8&color=ffffff&size=56`} alt={user.name} className="w-14 h-14 rounded-full object-cover"/>
-                <div>
-                  <h3 className="font-bold text-gray-900 text-lg">{user.name}</h3>
-                  <p className="text-gray-500 text-sm">@{user.username}</p>
+       {/* --- SIDEBAR (Right Column) --- */}
+<aside className="hidden lg:block space-y-6 sticky top-24 h-screen">
+  {/* My Profile Widget */}
+  {user && (
+    <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 backdrop-blur-sm">
+      <div className="flex items-center space-x-4">
+        {/* Profile Picture with Gradient Border */}
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 p-1">
+            {user.profilePic ? (
+              <img
+                src={user.profilePic}
+                alt={user.name}
+                className="w-full h-full rounded-full object-cover bg-white"
+              />
+            ) : (
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-purple-600">
+                  {user.name?.charAt(0).toUpperCase() || 'U'}
+                </span>
+              </div>
+            )}
+          </div>
+          {/* Online Status Indicator */}
+          <div className="absolute -bottom-1 -right-1 bg-green-500 w-5 h-5 rounded-full border-2 border-white flex items-center justify-center">
+            <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+          </div>
+        </div>
+        
+        <div>
+          <h3 className="font-bold text-gray-900 text-lg">{user.name}</h3>
+          <p className="text-indigo-600 font-medium text-sm">@{user.username}</p>
+        </div>
+      </div>
+      
+      <Link 
+        to={`/my-posts`} 
+        className="mt-6 block w-full text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-full font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+      >
+        View My Profile
+      </Link>
+    </div>
+  )}
+  
+  {/* Who to Follow Widget */}
+  {suggestedUsers.length > 0 && (
+    <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 backdrop-blur-sm">
+      <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
+        <UserPlus className="h-5 w-5 mr-2 text-indigo-500" />
+        Who to Follow
+      </h3>
+      <div className="space-y-5">
+        {suggestedUsers.map(sUser => (
+          <div key={sUser._id} className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              {/* Suggested User Profile Picture with Gradient */}
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-300 to-purple-500 p-0.5">
+                  {sUser.profilePic ? (
+                    <img
+                      src={sUser.profilePic}
+                      alt={sUser.name}
+                      className="w-full h-full rounded-full object-cover bg-white"
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+                      <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-purple-600">
+                        {sUser.name?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-              <Link to={`/my-posts`} className="mt-4 block w-full text-center bg-indigo-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-700 transition-colors">
-                View My Profile
-              </Link>
-            </div>
-          )}
-          
-          {/* Who to Follow Widget */}
-          {suggestedUsers.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
-                <UserPlus className="h-5 w-5 mr-2 text-indigo-500" />
-                Who to Follow
-              </h3>
-              <div className="space-y-4">
-                {suggestedUsers.map(sUser => (
-                  <div key={sUser._id} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <img src={sUser.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(sUser.name)}&background=c7d2fe&color=4338ca&size=40`} alt={sUser.name} className="w-10 h-10 rounded-full object-cover"/>
-                      <div>
-                        <h4 className="font-semibold text-gray-800 text-sm">{sUser.name}</h4>
-                        <p className="text-gray-400 text-xs">@{sUser.username}</p>
-                      </div>
-                    </div>
-                    <Link to={`/profile/${sUser.username}`} className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-medium hover:bg-indigo-100 hover:text-indigo-700 transition-colors">
-                      View
-                    </Link>
-                  </div>
-                ))}
+              
+              <div>
+                <h4 className="font-semibold text-gray-800 text-sm">{sUser.name}</h4>
+                <p className="text-gray-500 text-xs">@{sUser.username}</p>
               </div>
             </div>
-          )}
-        </aside>
+            
+            <Link 
+              to={`/profile/${sUser.username}`} 
+              className="text-xs bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full font-medium hover:bg-indigo-200 transition-all duration-200 hover:shadow-md transform hover:-translate-y-0.5"
+            >
+              View
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</aside>
       </div>
     </div>
   );
