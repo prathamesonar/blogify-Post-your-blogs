@@ -63,11 +63,30 @@ const HomePage = () => {
   };
 
   const handleLike = async (postId) => {
+    // Find the post being liked
+    const originalPosts = [...posts];
+    const post = posts.find((p) => p._id === postId);
+    if (!post) return;
+
+    // --- Optimistic Update ---
+    // 1. Instantly update the UI
+    const isLiked = post.likes.includes(user._id);
+    const updatedPost = {
+      ...post,
+      likes: isLiked
+        ? post.likes.filter((id) => id !== user._id) // Unlike
+        : [...post.likes, user._id], // Like
+    };
+    handlePostUpdate(updatedPost);
+
+    // 2. Send the request to the server in the background
     try {
-      const updatedPost = await likePost(postId);
-      handlePostUpdate(updatedPost);
+      await likePost(postId);
     } catch (error) {
       console.error('Error liking post:', error);
+      // If the server request fails, revert the UI to its original state
+      setPosts(originalPosts);
+      alert('Failed to update like. Please try again.');
     }
   };
 
