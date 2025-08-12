@@ -157,17 +157,39 @@ exports.getSystemAnalytics = async (req, res) => {
         const totalUsers = await User.countDocuments();
         const totalPosts = await Post.countDocuments();
         
+        // FIX 1: Add a $match stage to ensure createdAt exists before grouping
         const userGrowth = await User.aggregate([
-            { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, count: { $sum: 1 } } },
+            { $match: { createdAt: { $exists: true, $ne: null } } },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
             { $sort: { '_id.year': 1, '_id.month': 1 } }
         ]);
         
+        // FIX 2: Add a $match stage here as well
         const postGrowth = await Post.aggregate([
-            { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, count: { $sum: 1 } } },
+            { $match: { createdAt: { $exists: true, $ne: null } } },
+            {
+                $group: {
+                    _id: {
+                        year: { $year: '$createdAt' },
+                        month: { $month: '$createdAt' }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
             { $sort: { '_id.year': 1, '_id.month': 1 } }
         ]);
         
+        // FIX 3: Filter out users with no username
         const topUsersByFollowers = await User.aggregate([
+            { $match: { username: { $exists: true, $ne: "" } } },
             { $project: { name: 1, username: 1, followersCount: { $size: { $ifNull: ['$followers', []] } } } },
             { $sort: { followersCount: -1 } },
             { $limit: 10 }
