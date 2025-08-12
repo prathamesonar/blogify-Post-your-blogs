@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
-const { createPost, getFeedPosts, getMyPosts, likeUnlikePost, commentOnPost, updatePost, deletePost } = require('../controllers/postController');
+const postController = require('../controllers/postController'); // Import the whole controller
 
-router.post('/', protect, createPost);
-router.get('/feed', protect, getFeedPosts);
-router.get('/my-posts', protect, getMyPosts);
-router.post('/like/:id', protect, likeUnlikePost);
-router.post('/comment/:id', protect, commentOnPost);
-router.put('/:id', protect, updatePost);
-router.delete('/:id', protect, deletePost);
+// Use the controller methods directly
+router.post('/', protect, postController.createPost);
+router.get('/feed', protect, postController.getFeedPosts);
+router.get('/my-posts', protect, postController.getMyPosts);
+router.post('/like/:id', protect, postController.likeUnlikePost);
+router.post('/comment/:id', protect, postController.commentOnPost);
+router.put('/:id', protect, postController.updatePost);
+router.delete('/:id', protect, postController.deletePost);
 
 module.exports = router;
