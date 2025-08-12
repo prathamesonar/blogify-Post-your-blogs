@@ -16,7 +16,7 @@ export default defineConfig({
   server: { // Add this server configuration
     proxy: {
       '/api': {
-        target: 'http://localhost:5000',
+        target: 'https://blogify-backend-mpzv.onrender.com',
         changeOrigin: true,
         secure: false,
       },
