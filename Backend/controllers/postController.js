@@ -21,10 +21,12 @@ const createPost = async (req, res) => {
 // Get feed posts (for the current user)
 const getFeedPosts = async (req, res) => {
     try {
-        // Show ALL posts from other users (excluding current user's posts)
         const feedPosts = await Post.find({ 
             user: { $ne: req.user._id } 
-        }).sort({ createdAt: -1 }).populate('user', 'name username profilePic');
+        })
+        .sort({ createdAt: -1 })
+        .populate('user', 'name username profilePic')
+        .populate('comments.user', 'name username profilePic'); // <-- ADD THIS LINE
         
         res.status(200).json(feedPosts);
     } catch (error) {
@@ -32,17 +34,18 @@ const getFeedPosts = async (req, res) => {
     }
 };
 
-// Get user's own posts
 const getMyPosts = async (req, res) => {
     try {
         const posts = await Post.find({ user: req.user._id })
             .sort({ createdAt: -1 })
-            .populate('user', 'name username profilePic');
+            .populate('user', 'name username profilePic')
+            .populate('comments.user', 'name username profilePic'); // <-- ADD THIS LINE
         res.status(200).json(posts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 // Like/Unlike a post
 const likeUnlikePost = async (req, res) => {
