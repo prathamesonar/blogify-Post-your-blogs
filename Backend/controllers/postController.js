@@ -18,7 +18,6 @@ const createPost = async (req, res) => {
     }
 };
 
-// Get feed posts (for the current user)
 const getFeedPosts = async (req, res) => {
     try {
         const feedPosts = await Post.find({ 
