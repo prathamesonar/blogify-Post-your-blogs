@@ -77,29 +77,22 @@ const commentOnPost = async (req, res) => {
         if (!text || text.trim() === "") {
             return res.status(400).json({ message: "Comment cannot be empty" });
         }
+        const comment = { user: req.user._id, text: text };
 
-        const comment = { 
-            user: req.user._id, 
-            text: text 
-        };
-
-        // This is a more atomic and reliable way to update and populate
         const updatedPost = await Post.findByIdAndUpdate(
             req.params.id,
             { $push: { comments: comment } },
-            { new: true } // This option returns the document *after* the update has been applied
+            { new: true }
         )
         .populate('user', 'name username profilePic')
-        .populate('comments.user', 'name username profilePic'); // This populates the user on the new comment
+        .populate('comments.user', 'name username profilePic'); // This line is essential
 
         if (!updatedPost) {
             return res.status(404).json({ message: "Post not found" });
         }
         
         res.status(200).json(updatedPost);
-
     } catch (error) {
-        console.error("Error in commentOnPost:", error);
         res.status(500).json({ message: error.message });
     }
 };
