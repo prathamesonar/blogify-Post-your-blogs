@@ -1,12 +1,12 @@
 const User = require('../models/userModel');
 const Post = require('../models/postModel');
 
-// Get all users
+// Get all users with complete details
 exports.getAllUsers = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const { page = 1, limit = 10, search = '' } = req.query;
         const skip = (page - 1) * limit;
+
         const searchQuery = search ? {
             $or: [
                 { name: { $regex: search, $options: 'i' } },
@@ -14,6 +14,7 @@ exports.getAllUsers = async (req, res) => {
                 { email: { $regex: search, $options: 'i' } }
             ]
         } : {};
+
         const users = await User.find(searchQuery)
             .select('-password')
             .populate('followers', 'name username profilePic email')
@@ -21,26 +22,30 @@ exports.getAllUsers = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip(skip);
+
         const totalUsers = await User.countDocuments(searchQuery);
+        
         const usersWithStats = await Promise.all(users.map(async (user) => {
             const postsCount = await Post.countDocuments({ user: user._id });
             const totalLikes = await Post.aggregate([
                 { $match: { user: user._id } },
-                { $project: { likesCount: { $size: '$likes' } } },
+                { $project: { likesCount: { $size: { $ifNull: ['$likes', []] } } } },
                 { $group: { _id: null, totalLikes: { $sum: '$likesCount' } } }
             ]);
+            
             return {
                 ...user.toObject(),
                 postsCount,
-                followersCount: user.followers.length,
-                followingCount: user.following.length,
+                followersCount: user.followers?.length || 0,
+                followingCount: user.following?.length || 0,
                 totalLikes: totalLikes[0]?.totalLikes || 0
             };
         }));
+        
         res.status(200).json({
             users: usersWithStats,
             totalPages: Math.ceil(totalUsers / limit),
-            currentPage: page,
+            currentPage: parseInt(page),
             totalUsers
         });
     } catch (error) {
@@ -48,32 +53,32 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
-// Get all posts
+// Get all posts with complete details
 exports.getAllPosts = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const { page = 1, limit = 10, search = '' } = req.query;
         const skip = (page - 1) * limit;
-        const searchQuery = search ? {
-            $or: [
-                { text: { $regex: search, $options: 'i' } }
-            ]
-        } : {};
+
+        const searchQuery = search ? { text: { $regex: search, $options: 'i' } } : {};
+
         const posts = await Post.find(searchQuery)
             .populate('user', 'name username profilePic email createdAt')
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip(skip);
+
         const totalPosts = await Post.countDocuments(searchQuery);
+        
         const postsWithStats = posts.map(post => ({
             ...post.toObject(),
-            likesCount: post.likes.length,
-            commentsCount: post.comments.length
+            likesCount: post.likes?.length || 0,
+            commentsCount: post.comments?.length || 0
         }));
+        
         res.status(200).json({
             posts: postsWithStats,
             totalPages: Math.ceil(totalPosts / limit),
-            currentPage: page,
+            currentPage: parseInt(page),
             totalPosts
         });
     } catch (error) {
@@ -81,15 +86,16 @@ exports.getAllPosts = async (req, res) => {
     }
 };
 
-// Get dashboard stats
+// Get comprehensive dashboard stats
 exports.getDashboardStats = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const totalUsers = await User.countDocuments();
         const totalPosts = await Post.countDocuments();
+        
         const last7Days = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         const newUsers7Days = await User.countDocuments({ createdAt: { $gte: last7Days } });
         const newPosts7Days = await Post.countDocuments({ createdAt: { $gte: last7Days } });
+        
         const mostActiveUsers = await Post.aggregate([
             { $group: { _id: '$user', postsCount: { $sum: 1 } } },
             { $sort: { postsCount: -1 } },
@@ -98,14 +104,16 @@ exports.getDashboardStats = async (req, res) => {
             { $unwind: '$user' },
             { $project: { username: '$user.username', name: '$user.name', postsCount: 1 } }
         ]);
+        
         const mostLikedPosts = await Post.aggregate([
-            { $project: { likesCount: { $size: '$likes' }, user: 1, text: 1, createdAt: 1 } },
+            { $project: { text: 1, user: 1, createdAt: 1, likesCount: { $size: { $ifNull: ['$likes', []] } } } },
             { $sort: { likesCount: -1 } },
             { $limit: 5 },
             { $lookup: { from: 'users', localField: 'user', foreignField: '_id', as: 'user' } },
             { $unwind: '$user' },
             { $project: { username: '$user.username', name: '$user.name', text: 1, likesCount: 1, createdAt: 1 } }
         ]);
+        
         res.status(200).json({
             totalUsers,
             totalPosts,
@@ -119,52 +127,25 @@ exports.getDashboardStats = async (req, res) => {
     }
 };
 
-// Get user by ID
+// Get single user details
 exports.getUserById = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const { userId } = req.params;
-        const user = await User.findById(userId)
-            .select('-password')
-            .populate('followers', 'name username profilePic email')
-            .populate('following', 'name username profilePic email');
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        const userPosts = await Post.find({ user: userId })
-            .populate('user', 'name username profilePic')
-            .sort({ createdAt: -1 });
-        const userStats = {
-            ...user.toObject(),
-            postsCount: userPosts.length,
-            followersCount: user.followers.length,
-            followingCount: user.following.length,
-            posts: userPosts
-        };
-        res.status(200).json(userStats);
+        const user = await User.findById(userId).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Get post by ID
+// Get single post details
 exports.getPostById = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const { postId } = req.params;
-        const post = await Post.findById(postId)
-            .populate('user', 'name username profilePic email')
-            .populate('likes', 'name username profilePic')
-            .populate('comments.user', 'name username profilePic');
-        if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
-        }
-        const postStats = {
-            ...post.toObject(),
-            likesCount: post.likes.length,
-            commentsCount: post.comments.length
-        };
-        res.status(200).json(postStats);
+        const post = await Post.findById(postId);
+        if (!post) return res.status(404).json({ message: 'Post not found' });
+        res.status(200).json(post);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -172,31 +153,35 @@ exports.getPostById = async (req, res) => {
 
 // Get system analytics
 exports.getSystemAnalytics = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const totalUsers = await User.countDocuments();
         const totalPosts = await Post.countDocuments();
+        
         const userGrowth = await User.aggregate([
             { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, count: { $sum: 1 } } },
             { $sort: { '_id.year': 1, '_id.month': 1 } }
         ]);
+        
         const postGrowth = await Post.aggregate([
             { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, count: { $sum: 1 } } },
             { $sort: { '_id.year': 1, '_id.month': 1 } }
         ]);
+        
         const topUsersByFollowers = await User.aggregate([
-            { $project: { followersCount: { $size: '$followers' }, name: 1, username: 1 } },
+            { $project: { name: 1, username: 1, followersCount: { $size: { $ifNull: ['$followers', []] } } } },
             { $sort: { followersCount: -1 } },
             { $limit: 10 }
         ]);
+        
         const topPostsByLikes = await Post.aggregate([
-            { $project: { likesCount: { $size: '$likes' }, text: 1, user: 1 } },
+            { $project: { text: 1, user: 1, likesCount: { $size: { $ifNull: ['$likes', []] } } } },
             { $sort: { likesCount: -1 } },
             { $limit: 10 },
             { $lookup: { from: 'users', localField: 'user', foreignField: '_id', as: 'user' } },
             { $unwind: '$user' },
             { $project: { text: 1, likesCount: 1, username: '$user.username', name: '$user.name' } }
         ]);
+        
         res.status(200).json({
             totalUsers,
             totalPosts,
@@ -210,26 +195,21 @@ exports.getSystemAnalytics = async (req, res) => {
     }
 };
 
-// Delete user
+// Delete user (admin only)
 exports.deleteUser = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const { userId } = req.params;
         await Post.deleteMany({ user: userId });
-        await User.updateMany(
-            { $or: [{ followers: userId }, { following: userId }] },
-            { $pull: { followers: userId, following: userId } }
-        );
+        await User.updateMany({}, { $pull: { followers: userId, following: userId } });
         await User.findByIdAndDelete(userId);
-        res.status(200).json({ message: 'User and all associated data deleted successfully' });
+        res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-// Delete post
+// Delete post (admin only)
 exports.deletePostAdmin = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
         const { postId } = req.params;
         await Post.findByIdAndDelete(postId);
