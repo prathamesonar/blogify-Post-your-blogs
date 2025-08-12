@@ -11,13 +11,20 @@ dotenv.config();
 connectDB();
 const app = express();
 
-// CORS configuration
+
+//////////////////
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://blogify-post-your-blogs.onrender.com'],
+  origin: process.env.CORS_ORIGIN, // This will be your frontend's URL
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
 }));
+////////////////
+// // CORS configuration
+// app.use(cors({
+//   origin: ['http://localhost:5173', 'http://localhost:3000', 'https://blogify-post-your-blogs.onrender.com'],
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization']
+// }));
 
 app.use(express.json());
 app.use(cookieParser());
