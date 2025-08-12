@@ -209,6 +209,9 @@ const deleteAccount = async (req, res) => {
 
         // Delete all posts by the user
         await Post.deleteMany({ user: req.user._id });
+
+        // Remove all comments by the user from all posts
+        await Post.updateMany({}, { $pull: { comments: { user: req.user._id } } });
         
         // Delete the user
         await User.findByIdAndDelete(req.user._id);
