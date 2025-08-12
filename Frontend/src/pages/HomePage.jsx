@@ -4,12 +4,14 @@ import { searchUsers } from '../services/userService';
 import Post from '../components/Post';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { UserPlus } from 'lucide-react';
 
 const HomePage = () => {
   const [posts, setPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [suggestedUsers, setSuggestedUsers] = useState([]);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -20,13 +22,27 @@ const HomePage = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    const fetchFeed = async () => {
+    const fetchAllData = async () => {
       if (user) {
         try {
-          const feedPosts = await getFeed();
+          // Fetch feed and user suggestions in parallel
+          const [feedPosts, allUsers] = await Promise.all([
+            getFeed(),
+            searchUsers('') // Fetch all users for suggestions
+          ]);
+
           setPosts(Array.isArray(feedPosts) ? feedPosts : []);
+          
+          // Logic for "Who to Follow"
+          if (Array.isArray(allUsers)) {
+            const usersToSuggest = allUsers
+              .filter(u => u._id !== user._id) // Exclude self
+              .slice(0, 5); // Show top 5 suggestions
+            setSuggestedUsers(usersToSuggest);
+          }
+
         } catch (error) {
-          console.error("Failed to fetch feed", error);
+          console.error("Failed to fetch data", error);
           setPosts([]);
         } finally {
           setLoading(false);
@@ -35,7 +51,7 @@ const HomePage = () => {
         setLoading(false);
       }
     };
-    fetchFeed();
+    fetchAllData();
   }, [user]);
 
   const handlePostUpdate = (updatedPost) => {
@@ -88,124 +104,129 @@ const HomePage = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto mt-6 px-4">
-      {user ? (
-        <>
-          {/* --- ENHANCED SEARCH BAR --- */}
-          <div className="mb-8">
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-10">
-                <svg className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              
-              <input
-                type="text"
-                placeholder="Search users by name or username..."
-                value={searchQuery}
-                onChange={handleSearch}
-                className="w-full pl-14 pr-12 py-4 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/50 focus:bg-white transition-all duration-300 text-lg font-medium shadow-sm hover:shadow-md hover:border-gray-300 backdrop-blur-sm"
-              />
-              
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-500 transition-all duration-200 z-10 hover:scale-110 transform"
-                >
-                  <div className="p-1 rounded-full hover:bg-red-50 transition-colors duration-200">
-                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+        
+        {/* --- MAIN CONTENT (Left Column) --- */}
+        <main className="lg:col-span-2">
+          {user ? (
+            <>
+              {/* Search Bar */}
+              <div className="mb-8">
+                {/* (Your enhanced search bar code is here) */}
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none z-10">
+                    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-indigo-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
-                </button>
-              )}
-              
-              {searchQuery && (
-                <div className="absolute inset-y-0 right-12 flex items-center pr-2 pointer-events-none">
-                  <div className="animate-pulse w-2 h-2 bg-indigo-400 rounded-full"></div>
+                  <input
+                    type="text"
+                    placeholder="Search users by name or username..."
+                    value={searchQuery}
+                    onChange={handleSearch}
+                    className="w-full pl-14 pr-12 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100/50 transition-all duration-300 text-lg font-medium shadow-sm hover:shadow-md"
+                  />
                 </div>
-              )}
-              
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            </div>
 
-            {searchResults.length > 0 && (
-              <div className="mt-4 bg-white border border-gray-200 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden">
-                <div className="px-6 py-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                    Search Results ({searchResults.length})
-                  </h3>
-                </div>
-                <div className="max-h-80 overflow-y-auto">
-                  {searchResults.map((user) => (
-                    <Link
-                      key={user._id}
-                      to={`/profile/${user.username}`}
-                      className="block px-6 py-4 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 border-b border-gray-100 last:border-b-0 group"
-                    >
-                      <div className="flex items-center space-x-4">
-                        <div className="relative">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-400 to-purple-600 p-0.5 group-hover:scale-10S5 transition-transform duration-200">
-                            <img
-                              src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6366f1&color=ffffff&size=48`}
-                              alt={user.name}
-                              className="w-full h-full rounded-full object-cover bg-white"
-                            />
-                          </div>
-                          <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <h4 className="font-semibold text-gray-900 truncate group-hover:text-indigo-700 transition-colors duration-200">
-                              {user.name}
-                            </h4>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <p className="text-sm text-indigo-600 font-medium">@{user.username}</p>
+                {/* Search Results */}
+                {searchResults.length > 0 && (
+                  <div className="mt-4 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+                    {searchResults.map((u) => (
+                      <Link key={u._id} to={`/profile/${u.username}`} className="block px-6 py-4 hover:bg-gray-50 transition-colors duration-200 border-b border-gray-100 last:border-b-0">
+                        <div className="flex items-center space-x-4">
+                          <img src={u.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name)}&background=6366f1&color=ffffff&size=48`} alt={u.name} className="w-12 h-12 rounded-full object-cover"/>
+                          <div>
+                            <h4 className="font-semibold text-gray-900">{u.name}</h4>
+                            <p className="text-sm text-indigo-600">@{u.username}</p>
                           </div>
                         </div>
-                      </div>
-                    </Link>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Feed */}
+              {posts.length > 0 ? (
+                <div className="space-y-6">
+                  {posts.map(post => (
+                    <Post 
+                      key={post._id} 
+                      post={post} 
+                      onLike={handleLike}
+                      onComment={handleComment}
+                      onDelete={handlePostDelete}
+                      onEdit={handleEdit}
+                    />
                   ))}
                 </div>
-              </div>
-            )}
-          </div>
-
-          {/* Feed */}
-          {posts.length > 0 ? (
-            <div className="space-y-6">
-              {posts.map(post => (
-                <Post 
-                  key={post._id} 
-                  post={post} 
-                  onLike={handleLike}
-                  onComment={handleComment}
-                  onDelete={handlePostDelete}
-                  onEdit={handleEdit}
-                />
-              ))}
-            </div>
+              ) : (
+                <div className="text-center text-gray-500 py-12 bg-white rounded-2xl shadow-sm">
+                  <p className="text-xl mb-4">Your feed is empty.</p>
+                  <p>Follow some users to see their posts here!</p>
+                </div>
+              )}
+            </>
           ) : (
-            <div className="text-center text-gray-500 py-12">
-              <p className="text-xl mb-4">Your feed is empty.</p>
-              <p>Follow some users to see their posts here!</p>
+            <div className="text-center bg-white p-10 rounded-lg shadow">
+              <h1 className="text-3xl font-bold mb-4">Welcome to Blogify!</h1>
+              <p className="text-gray-600">Please login or register to see the feed.</p>
             </div>
           )}
-        </>
-      ) : (
-        <div className="text-center bg-white p-10 rounded-lg shadow">
-          <h1 className="text-3xl font-bold mb-4">Welcome to Blogify!</h1>
-          <p className="text-gray-600">Please login or register to see the feed and connect with others.</p>
-        </div>
-      )}
+        </main>
+
+        {/* --- SIDEBAR (Right Column) --- */}
+        <aside className="hidden lg:block space-y-6 sticky top-24 h-screen">
+          {/* My Profile Widget */}
+          {user && (
+            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+              <div className="flex items-center space-x-4">
+                <img src={user.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=818cf8&color=ffffff&size=56`} alt={user.name} className="w-14 h-14 rounded-full object-cover"/>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-lg">{user.name}</h3>
+                  <p className="text-gray-500 text-sm">@{user.username}</p>
+                </div>
+              </div>
+              <Link to={`/my-posts`} className="mt-4 block w-full text-center bg-indigo-600 text-white px-4 py-2 rounded-full font-semibold hover:bg-indigo-700 transition-colors">
+                View My Profile
+              </Link>
+            </div>
+          )}
+          
+          {/* Who to Follow Widget */}
+          {suggestedUsers.length > 0 && (
+            <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                <UserPlus className="h-5 w-5 mr-2 text-indigo-500" />
+                Who to Follow
+              </h3>
+              <div className="space-y-4">
+                {suggestedUsers.map(sUser => (
+                  <div key={sUser._id} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <img src={sUser.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent(sUser.name)}&background=c7d2fe&color=4338ca&size=40`} alt={sUser.name} className="w-10 h-10 rounded-full object-cover"/>
+                      <div>
+                        <h4 className="font-semibold text-gray-800 text-sm">{sUser.name}</h4>
+                        <p className="text-gray-400 text-xs">@{sUser.username}</p>
+                      </div>
+                    </div>
+                    <Link to={`/profile/${sUser.username}`} className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-medium hover:bg-indigo-100 hover:text-indigo-700 transition-colors">
+                      View
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
+      </div>
     </div>
   );
 };
