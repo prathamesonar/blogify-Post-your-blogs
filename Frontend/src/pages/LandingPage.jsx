@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { PenTool, Users, BookOpen, TrendingUp, Edit3, MessageCircle, Eye, Heart, Menu, X } from 'lucide-react';
+import { PenTool, Users, BookOpen, TrendingUp, Edit3, MessageCircle, Eye, Heart, Menu, X, Github, Heart } from 'lucide-react';
 
 const LandingPage = () => {
   const { user, loading } = useAuth();
@@ -244,72 +244,32 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16 overflow-hidden">
-  {/* Background decorative elements */}
-  <div className="absolute inset-0 opacity-10">
-    <div className="absolute top-0 left-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-    <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
-  </div>
-  
-  <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
-      <div className="sm:col-span-2 md:col-span-1">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
-            <PenTool className="h-7 w-7 text-white" />
+     <footer className="bg-gray-50 border-t border-gray-200 mt-16">
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+          {/* Left side - Copyright */}
+          <div className="text-gray-600 text-sm">
+            © 2025 Blogify. All rights reserved.
           </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            Blogify
-          </span>
+
+          {/* Right side - Developer Credit */}
+          <div className="flex items-center space-x-2 text-gray-600 text-sm">
+            <span>Built with</span>
+            <Heart className="h-4 w-4 text-red-500 fill-current" />
+            <span>by</span>
+            <a 
+              href="https://github.com/prathamesonar" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-indigo-600 hover:text-indigo-800 font-medium inline-flex items-center space-x-1 transition-colors"
+            >
+              <span>YourName</span>
+              <Github className="h-4 w-4" />
+            </a>
+          </div>
         </div>
-        <p className="text-gray-300 leading-relaxed text-base max-w-sm">
-          The modern blogging platform for writers who want to focus on creating amazing content.
-        </p>
       </div>
-      
-      <div>
-        <h4 className="font-semibold mb-6 text-lg text-gray-100">Account</h4>
-        <ul className="space-y-3 text-gray-300">
-          {user ? (
-            <li>
-              <Link 
-                to="/home" 
-                className="hover:text-indigo-400 transition-all duration-200 hover:translate-x-1 inline-block"
-              >
-                Dashboard
-              </Link>
-            </li>
-          ) : (
-            <>
-              <li>
-                <Link 
-                  to="/login" 
-                  className="hover:text-indigo-400 transition-all duration-200 hover:translate-x-1 inline-block"
-                >
-                  Sign In
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/register" 
-                  className="hover:text-indigo-400 transition-all duration-200 hover:translate-x-1 inline-block"
-                >
-                  Start Writing
-                </Link>
-              </li>
-            </>
-          )}
-        </ul>
-      </div>
-    </div>
-    
-    <div className="border-t border-gray-700/50 mt-12 pt-8 text-center">
-      <p className="text-gray-400">
-        &copy; 2025 <span className="text-indigo-400 font-medium">Blogify</span>. All rights reserved.
-      </p>
-    </div>
-  </div>
-</footer>
+    </footer>
     </div>
   );
 };
