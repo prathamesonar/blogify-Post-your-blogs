@@ -144,15 +144,15 @@ const Post = ({ post, onLike, onComment, onDelete, onEdit }) => {
         </div>
       </div>
       
-      {/* Comments Section */}
+     {/* Comments Section */}
       {showComments && (
         <div ref={commentsRef} className="mt-6 pt-6 border-t border-gray-100">
           {/* Existing Comments */}
           {post.comments && post.comments.length > 0 && (
             <div className="space-y-4 mb-6">
-              {post.comments.map((comment, index) => (
+              {post.comments.map((comment) => ( 
                 <div 
-                  key={index} 
+                  key={comment._id}  
                   className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-2xl border border-gray-100 hover:shadow-md transition-all duration-200"
                 >
                   <div className="flex items-start space-x-3">
