@@ -91,7 +91,7 @@ const commentOnPost = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};
+}; 
 
 // Update a post
 const updatePost = async (req, res) => {
