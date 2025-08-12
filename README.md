@@ -20,7 +20,7 @@
 
 ## 🚀 Features
 
--   **✍️ Rich Text Editor**: Create beautiful and engaging posts with a full-featured WYSIWYG editor.
+-   **✍️ Rich Text Editor**: Create engaging posts with a full-featured WYSIWYG editor.
 -   **👤 User Authentication**: Secure user registration and login system using JSON Web Tokens (JWT).
 -   **🤝 Social Interactions**: Follow/unfollow users, like posts, and engage in discussions through a nested commenting system.
 -   **🔍 User & Post Search**: Easily find other users or posts with a dynamic search bar.
