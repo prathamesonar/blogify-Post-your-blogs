@@ -62,7 +62,7 @@ const Header = () => {
                 <div className="flex items-center space-x-2">
                   <Link
                     to="/home"
-                    className="inline-flex items-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                    className="inline-flex items-center justify-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                   >
                     <Home className="h-4 w-4" />
                     <span>Home</span>
@@ -72,7 +72,7 @@ const Header = () => {
                 {/* Create Post Button */}
                 <button
                   onClick={() => setShowCreatePost(true)}
-                  className="inline-flex items-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+                  className="inline-flex items-center justify-center space-x-2 bg-indigo-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Create Post</span>
@@ -81,7 +81,7 @@ const Header = () => {
                 {/* My Posts Button */}
                 <button
                   onClick={handleViewMyPosts}
-                  className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-gray-50"
+                  className="inline-flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-gray-50"
                 >
                   <FileText className="h-4 w-4" />
                   <span>My Posts</span>
@@ -90,7 +90,7 @@ const Header = () => {
                 {/* Settings Button */}
                 <button
                   onClick={handleSettings}
-                  className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-gray-50"
+                  className="inline-flex items-center justify-center space-x-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-gray-50"
                 >
                   <Settings className="h-4 w-4" />
                   <span>Settings</span>
@@ -99,7 +99,7 @@ const Header = () => {
                 {/* Logout Button */}
                 <button 
                   onClick={handleLogout} 
-                  className="inline-flex items-center space-x-2 text-red-600 hover:text-red-700 px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-red-50"
+                  className="inline-flex items-center justify-center space-x-2 text-red-600 hover:text-red-700 px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-red-50"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Sign Out</span>
@@ -139,7 +139,7 @@ const Header = () => {
                 {/* Create Post Button - Always visible on mobile */}
                 <button
                   onClick={handleCreatePost}
-                  className="inline-flex items-center bg-indigo-600 text-white px-3 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm"
+                  className="inline-flex items-center justify-center bg-indigo-600 text-white px-3 py-2 rounded-full text-sm font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm"
                 >
                   <Plus className="h-4 w-4" />
                   <span className="ml-1 sm:inline hidden">New</span>
@@ -163,18 +163,18 @@ const Header = () => {
 
         {/* Mobile Menu Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
+          <div className="lg:hidden absolute left-4 right-4 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {user ? (
                 <>
                   {/* User Welcome on Mobile */}
-                  <div className="px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-50 rounded-lg">
+                  <div className="px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-50 rounded-lg text-center">
                     Welcome, {user.name || user.username}
                   </div>
                   
                   <Link
                     to="/home"
-                    className="flex items-center space-x-3 px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    className="flex items-center justify-center space-x-3 px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Home className="h-5 w-5" />
@@ -183,7 +183,7 @@ const Header = () => {
 
                   <button
                     onClick={handleViewMyPosts}
-                    className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200 text-left"
+                    className="flex items-center justify-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
                   >
                     <FileText className="h-5 w-5" />
                     <span>My Posts</span>
@@ -191,7 +191,7 @@ const Header = () => {
 
                   <button
                     onClick={handleSettings}
-                    className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200 text-left"
+                    className="flex items-center justify-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
                   >
                     <Settings className="h-5 w-5" />
                     <span>Settings</span>
@@ -201,7 +201,7 @@ const Header = () => {
 
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-3 w-full px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-all duration-200 text-left"
+                    className="flex items-center justify-center space-x-3 w-full px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-all duration-200"
                   >
                     <LogOut className="h-5 w-5" />
                     <span>Sign Out</span>
@@ -211,14 +211,14 @@ const Header = () => {
                 <>
                   <Link
                     to="/"
-                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200 text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Home
                   </Link>
                   <Link
                     to="/login"
-                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200 text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Sign In
