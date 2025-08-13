@@ -60,7 +60,7 @@ const ContactPage = () => {
                   </div>
                 </div>
 
-                <div className="flex items-start space-x-4">
+{/*                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <MessageCircle className="h-6 w-6 text-indigo-600" />
                   </div>
@@ -70,9 +70,9 @@ const ContactPage = () => {
                       Start a conversation
                     </button>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="flex items-start space-x-4">
+{/*                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center flex-shrink-0">
                     <Clock className="h-6 w-6 text-indigo-600" />
                   </div>
@@ -80,7 +80,7 @@ const ContactPage = () => {
                     <h3 className="font-semibold text-gray-900 mb-1">Response Time</h3>
                     <p className="text-gray-600">Usually within 24 hours</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
