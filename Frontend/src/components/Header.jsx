@@ -11,6 +11,14 @@ const Header = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Close mobile menu when clicking outside
+  const handleOutsideClick = (e) => {
+    if (e.target.closest('.mobile-menu') || e.target.closest('.mobile-menu-button')) {
+      return;
+    }
+    setMobileMenuOpen(false);
+  };
+
   const handleLogout = async () => {
     await authService.logout();
     localStorage.removeItem('user');
@@ -36,7 +44,18 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <>
+      {/* Overlay for mobile menu */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-20 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
+      )}
+      
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm"
+        onClick={mobileMenuOpen ? handleOutsideClick : undefined}
+      >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -150,7 +169,7 @@ const Header = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900 p-2 rounded-lg hover:bg-gray-50 transition-all duration-200"
+              className="mobile-menu-button text-gray-600 hover:text-gray-900 focus:outline-none focus:text-gray-900 p-2 rounded-lg hover:bg-gray-50 transition-all duration-200"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -163,18 +182,19 @@ const Header = () => {
 
         {/* Mobile Menu Dropdown */}
         {mobileMenuOpen && (
-          <div className="lg:hidden absolute left-4 right-4 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+          <div className="lg:hidden absolute right-4 left-4 top-full mt-1 z-50">
+            <div className="mobile-menu bg-white border border-gray-200 rounded-xl shadow-2xl backdrop-blur-sm">
+              <div className="px-1 pt-2 pb-2 space-y-1">
               {user ? (
                 <>
                   {/* User Welcome on Mobile */}
-                  <div className="px-3 py-2 text-sm font-semibold text-gray-900 bg-gray-50 rounded-lg text-center">
+                  <div className="mx-2 mb-3 px-4 py-3 text-sm font-semibold text-gray-900 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl text-center border border-blue-100">
                     Welcome, {user.name || user.username}
                   </div>
                   
                   <Link
                     to="/home"
-                    className="flex items-center justify-center space-x-3 px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    className="mx-2 flex items-center justify-center space-x-3 px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl font-medium transition-all duration-200"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <Home className="h-5 w-5" />
@@ -183,7 +203,7 @@ const Header = () => {
 
                   <button
                     onClick={handleViewMyPosts}
-                    className="flex items-center justify-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    className="mx-2 flex items-center justify-center space-x-3 w-full px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl font-medium transition-all duration-200"
                   >
                     <FileText className="h-5 w-5" />
                     <span>My Posts</span>
@@ -191,17 +211,17 @@ const Header = () => {
 
                   <button
                     onClick={handleSettings}
-                    className="flex items-center justify-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
+                    className="mx-2 flex items-center justify-center space-x-3 w-full px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl font-medium transition-all duration-200"
                   >
                     <Settings className="h-5 w-5" />
                     <span>Settings</span>
                   </button>
 
-                  <div className="border-t border-gray-200 my-2"></div>
+                  <div className="border-t border-gray-100 my-2 mx-4"></div>
 
                   <button
                     onClick={handleLogout}
-                    className="flex items-center justify-center space-x-3 w-full px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium transition-all duration-200"
+                    className="mx-2 flex items-center justify-center space-x-3 w-full px-4 py-3 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl font-medium transition-all duration-200"
                   >
                     <LogOut className="h-5 w-5" />
                     <span>Sign Out</span>
@@ -211,21 +231,21 @@ const Header = () => {
                 <>
                   <Link
                     to="/"
-                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200 text-center"
+                    className="mx-2 block px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl font-medium transition-all duration-200 text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Home
                   </Link>
                   <Link
                     to="/login"
-                    className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200 text-center"
+                    className="mx-2 block px-4 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-xl font-medium transition-all duration-200 text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/register"
-                    className="block mx-3 my-2 bg-indigo-600 text-white px-4 py-2 rounded-full font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm text-center"
+                    className="mx-4 my-3 block bg-indigo-600 text-white px-6 py-3 rounded-full font-medium hover:bg-indigo-700 transition-all duration-200 shadow-sm text-center"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Start Writing
