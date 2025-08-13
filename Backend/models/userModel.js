@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  // Add index: true to username and email
   username: { type: String, required: true, unique: true, trim: true, index: true },
   email: { type: String, required: true, unique: true, trim: true, index: true },
   password: { type: String, required: true, minlength: 6 },
@@ -10,7 +11,7 @@ const userSchema = new mongoose.Schema({
   followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   bio: { type: String, default: '' },
-  role: { // New field for admin role
+  role: {
     type: String,
     enum: ['user', 'admin'],
     default: 'user',
