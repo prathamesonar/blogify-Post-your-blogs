@@ -34,23 +34,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem('user');
+  //   const token = localStorage.getItem('token');
 
-    if (storedUser && token) {
-      try {
-        const userData = JSON.parse(storedUser);
-        setUser(userData);
-        refreshUserData(userData.username);
-      } catch (error) {
-        console.error('Error parsing stored user:', error);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-      }
-    }
-    setLoading(false);
-  }, []);
+  //   if (storedUser && token) {
+  //     try {
+  //       const userData = JSON.parse(storedUser);
+  //       setUser(userData);
+  //       refreshUserData(userData.username);
+  //     } catch (error) {
+  //       console.error('Error parsing stored user:', error);
+  //       localStorage.removeItem('user');
+  //       localStorage.removeItem('token');
+  //     }
+  //   }
+  //   setLoading(false);
+  // }, []);
 
   const login = async (credentials) => {
     try {
