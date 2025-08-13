@@ -144,6 +144,32 @@ const ContactPage = () => {
             </div>
           </div>
         </div>
+         <footer className="bg-gray-900 border-t border-gray-800">
+  <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+      {/* Left side - Copyright */}
+      <div className="text-gray-400 text-sm">
+        © 2025 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 font-semibold">Blogify</span>. All rights reserved.
+      </div>
+      
+      {/* Right side - Developer Credit */}
+      <div className="flex items-center space-x-2 text-gray-400 text-sm">
+        <span>Built with</span>
+        <Heart className="h-4 w-4 text-red-500 fill-current" />
+        <span>by</span>
+        <a 
+          href="https://github.com/prathamesonar" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center space-x-1 transition-colors"
+        >
+          <span>Prathamesh Sonar</span>
+          <Github className="h-4 w-4" />
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
 
         
 
