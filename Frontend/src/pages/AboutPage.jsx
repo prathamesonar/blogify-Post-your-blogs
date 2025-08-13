@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '../components/Header';
-import { PenTool, Users, Target, Heart, Shield, Lightbulb, Globe, Award, Mail, Phone, MapPin, Send, MessageCircle, Clock, Users, Heart, Github } from 'lucide-react';
+import { PenTool, Users, Target, Heart, Shield, Lightbulb, Globe, Award, Mail, Phone, MapPin, Send, MessageCircle, Clock, Github } from 'lucide-react';
 
 const AboutPage = () => {
   return (
@@ -19,7 +19,6 @@ const AboutPage = () => {
           </p>
         </div>
       </div>
-
       <div className="max-w-6xl mx-auto px-4 py-16">
         
         <div className="bg-indigo-50 rounded-2xl p-8 text-center">
