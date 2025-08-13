@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from '../components/Header';
-import { PenTool, Users, Target, Heart, Shield, Lightbulb, Globe, Award } from 'lucide-react';
+import { PenTool, Users, Target, Heart, Shield, Lightbulb, Globe, Award, Mail, Phone, MapPin, Send, MessageCircle, Clock, Users, Heart, Github } from 'lucide-react';
 
 const AboutPage = () => {
   return (
