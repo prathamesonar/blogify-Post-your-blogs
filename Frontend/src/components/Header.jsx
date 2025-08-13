@@ -222,6 +222,13 @@ const Header = () => {
                   >
                     Home
                   </Link>
+                  <Link to="/about" className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200" onClick={() => setMobileMenuOpen(false)}>
+                About
+              </Link>
+              <Link to="/contact" className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200" onClick={() => setMobileMenuOpen(false)}>
+                Contact
+              </Link>
+                  
                   
                   <Link
                     to="/login"
