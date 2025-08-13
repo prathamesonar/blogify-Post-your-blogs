@@ -13,6 +13,7 @@ import SettingsPage from './pages/SettingsPage';
 import MyPostsPage from './pages/MyPostsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import { PostProvider } from './context/PostContext';
 // AdminLoginPage removed - using regular login for all users
 
 // Protected Route Component
@@ -57,6 +58,7 @@ const AuthenticatedLayout = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
+      <PostProvider>
       <Router>
         <Routes>
           {/* Public routes */}
@@ -132,6 +134,7 @@ function App() {
           />
         </Routes>
       </Router>
+      </PostProvider>
     </AuthProvider>
   );
 }
