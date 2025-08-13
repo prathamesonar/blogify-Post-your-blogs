@@ -14,7 +14,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Start with loading as true
 
   const refreshUserData = async (username) => {
     try {
@@ -34,23 +34,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem('user');
-  //   const token = localStorage.getItem('token');
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
 
-  //   if (storedUser && token) {
-  //     try {
-  //       const userData = JSON.parse(storedUser);
-  //       setUser(userData);
-  //       refreshUserData(userData.username);
-  //     } catch (error) {
-  //       console.error('Error parsing stored user:', error);
-  //       localStorage.removeItem('user');
-  //       localStorage.removeItem('token');
-  //     }
-  //   }
-  //   setLoading(false);
-  // }, []);
+      if (storedUser && token) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          // Optionally refresh user data in the background
+          await refreshUserData(userData.username);
+        } catch (error) {
+          console.error('Error parsing stored user:', error);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+        }
+      }
+      // This is the key change: ensure loading is set to false
+      // after the initial check is complete.
+      setLoading(false);
+    };
+
+    initializeAuth();
+  }, []);
 
   const login = async (credentials) => {
     try {
