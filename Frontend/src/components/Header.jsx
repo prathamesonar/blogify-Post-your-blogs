@@ -114,6 +114,12 @@ const Header = () => {
                   >
                     Home
                   </Link>
+                <Link to="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                About
+              </Link>
+              <Link to="/contact" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Contact
+              </Link>
                 <Link 
                   to="/login" 
                   className="text-gray-700 hover:text-gray-900 font-medium px-3 py-2 rounded-lg transition-colors"
@@ -216,6 +222,7 @@ const Header = () => {
                   >
                     Home
                   </Link>
+                  
                   <Link
                     to="/login"
                     className="block px-3 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg font-medium transition-all duration-200"
