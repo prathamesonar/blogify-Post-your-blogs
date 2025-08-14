@@ -22,8 +22,9 @@ const HomePage = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    // This will only fetch data if it hasn't been fetched before
-    fetchFeed(true);
+    if (user) {
+        fetchFeed(true);
+    }
 
     // Fetch user suggestions (this can still be fetched on component mount)
     const fetchSuggestions = async () => {
