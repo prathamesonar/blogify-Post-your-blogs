@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle, Loader, Heart, Github } from 'lucide-react';
@@ -13,19 +13,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const { user, login } = useAuth();
-  const navigate = useNavigate();
-
-  // ✅ Redirect based on role, wait for role to exist
-  useEffect(() => {
-    if (!user || !user.role) return;
-
-    if (user.role === 'admin') {
-      navigate('/admin/dashboard', { replace: true });
-    } else {
-      navigate('/home', { replace: true });
-    }
-  }, [user, navigate]);
+  const { login } = useAuth();
 
   const { loginIdentifier, password } = formData;
 
@@ -43,7 +31,14 @@ const LoginPage = () => {
 
     try {
       const userData = { loginIdentifier, password };
-      await login(userData);
+      const user = await login(userData); // Get the user data from the login function
+
+      // Redirect based on role after successful login using a full page reload
+      if (user.role === 'admin') {
+        window.location.href = '/admin/dashboard';
+      } else {
+        window.location.href = '/home';
+      }
     } catch (err) {
       const message =
         (err.response && err.response.data && err.response.data.message) ||
@@ -114,7 +109,7 @@ const LoginPage = () => {
                         placeholder="Enter your password"
                         className="w-full pl-12 pr-12 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500"
                         value={password}
-                        autocomplete="current-password"
+                        autoComplete="current-password"
                         onChange={onChange}
                         required
                       />
@@ -166,33 +161,33 @@ const LoginPage = () => {
         </div>
       </div>
       
-{/* Footer */}
+      {/* Footer */}
       <footer className="bg-gray-900 border-t border-gray-800">
-  <div className="max-w-6xl mx-auto px-4 py-6">
-    <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-      {/* Left side - Copyright */}
-      <div className="text-gray-400 text-sm">
-        © 2025 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 font-semibold">Blogify</span>. All rights reserved.
-      </div>
-      
-      {/* Right side - Developer Credit */}
-      <div className="flex items-center space-x-2 text-gray-400 text-sm">
-        <span>Built with</span>
-        <Heart className="h-4 w-4 text-red-500 fill-current" />
-        <span>by</span>
-        <a 
-          href="https://github.com/prathamesonar" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center space-x-1 transition-colors"
-        >
-          <span>Prathamesh Sonar</span>
-          <Github className="h-4 w-4" />
-        </a>
-      </div>
-    </div>
-  </div>
-</footer>
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+            {/* Left side - Copyright */}
+            <div className="text-gray-400 text-sm">
+              © 2025 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 font-semibold">Blogify</span>. All rights reserved.
+            </div>
+            
+            {/* Right side - Developer Credit */}
+            <div className="flex items-center space-x-2 text-gray-400 text-sm">
+              <span>Built with</span>
+              <Heart className="h-4 w-4 text-red-500 fill-current" />
+              <span>by</span>
+              <a 
+                href="https://github.com/prathamesonar" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center space-x-1 transition-colors"
+              >
+                <span>Prathamesh Sonar</span>
+                <Github className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </>
   );
 };
