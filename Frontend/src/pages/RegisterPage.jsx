@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import authService from '../services/authService';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import { Eye, EyeOff, Mail, Lock, User, Heart, Github, UserCheck, ArrowRight, CheckCircle, AlertCircle, Loader } from 'lucide-react';
@@ -17,6 +16,9 @@ const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const { user, register } = useAuth();
+  const navigate = useNavigate();
+
+  // This useEffect is no longer needed and has been removed.
 
   const { name, username, email, password } = formData;
 
@@ -35,8 +37,10 @@ const RegisterPage = () => {
     try {
       const userData = { name, username, email, password };
       await register(userData);
-      // Force a full page reload to ensure the auth cookie is set before the next page loads
-      window.location.href = '/home';
+      
+      // ✅ FIX: Use navigate for a seamless transition without a page reload.
+      navigate('/home', { replace: true });
+
     } catch (err) {
       const message =
         (err.response && err.response.data && err.response.data.message) ||
@@ -55,14 +59,12 @@ const RegisterPage = () => {
       <>
         <Header />
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))] -z-10"></div>
-          
           <div className="flex items-center justify-center min-h-screen px-4">
             <div className="w-full max-w-md">
               <div className="text-center mb-8">
                 <div className="inline-flex items-center px-4 py-2 bg-green-50 rounded-full border border-green-200 mb-6">
                   <CheckCircle className="h-4 w-4 text-green-500 mr-2" />
-                  <span className="text-sm font-medium text-green-900">Already registered</span>
+                  <span className="text-sm font-medium text-green-900">Already Logged In</span>
                 </div>
                 <h3 className="text-4xl font-bold text-gray-900 mb-4">Welcome Back!</h3>
                 <p className="text-xl text-gray-600">
@@ -76,14 +78,8 @@ const RegisterPage = () => {
                     to="/home"
                     className="w-full group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center"
                   >
-                    Go to Dashboard
+                    Go to Your Feed
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                  <Link
-                    to="/"
-                    className="w-full border-2 border-gray-300 text-gray-700 px-6 py-4 rounded-2xl hover:border-gray-400 hover:bg-gray-50 transition-all duration-300 font-semibold text-lg"
-                  >
-                    Back to Landing Page
                   </Link>
                 </div>
               </div>
@@ -98,8 +94,6 @@ const RegisterPage = () => {
     <>
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,#fff,rgba(255,255,255,0.6))] -z-10"></div>
-        
         <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="w-full max-w-md">
             <div className="text-center mb-12">
