@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
       const userData = response;
 
       localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', userData.token || 'authenticated');
+      // localStorage.setItem('token', userData.token || 'authenticated');
 
       setUser(userData);
       return userData;
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
       const newUser = response;
 
       localStorage.setItem('user', JSON.stringify(newUser));
-      localStorage.setItem('token', newUser.token || 'authenticated');
+      // localStorage.setItem('token', newUser.token || 'authenticated');
 
       setUser(newUser);
       return newUser;
