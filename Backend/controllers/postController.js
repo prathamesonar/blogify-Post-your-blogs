@@ -19,15 +19,13 @@ exports.createPost = async (req, res) => {
 // Get feed posts
 exports.getFeedPosts = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        // A true feed shows posts from users you are following
+        // This finds all posts where the 'user' is "not equal" ($ne) to the logged-in user's ID.
         const feedPosts = await Post.find({
-            user: { $in: user.following }
-        }).sort({ createdAt: -1 }).populate('user', 'name username profilePic').populate('comments.user', 'name username profilePic');
+            user: { $ne: req.user._id }
+        })
+        .sort({ createdAt: -1 })
+        .populate('user', 'name username profilePic')
+        .populate('comments.user', 'name username profilePic');
 
         res.status(200).json(feedPosts);
     } catch (error) {
