@@ -1,5 +1,5 @@
 const Post = require('../models/postModel');
-
+const User = require('../models/userModel');
 // Create a new post
 exports.createPost = async (req, res) => {
     // ... (keep the existing function code here)
@@ -18,11 +18,17 @@ exports.createPost = async (req, res) => {
 
 // Get feed posts
 exports.getFeedPosts = async (req, res) => {
-    // ... (keep the existing function code here)
     try {
-        const feedPosts = await Post.find({ 
-            user: { $ne: req.user._id } 
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // A true feed shows posts from users you are following
+        const feedPosts = await Post.find({
+            user: { $in: user.following }
         }).sort({ createdAt: -1 }).populate('user', 'name username profilePic').populate('comments.user', 'name username profilePic');
+
         res.status(200).json(feedPosts);
     } catch (error) {
         res.status(500).json({ message: error.message });
