@@ -7,20 +7,20 @@ const api = axios.create({
 
 // ✅ ADD THIS INTERCEPTOR
 // This block will run before every request
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      // If the token exists, add it to the request headers
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    // If there's an error, just pass it along
-    return Promise.reject(error);
-  }
-);
+// api.interceptors.request.use(
+//   (config) => {
+//     const token = localStorage.getItem('token');
+//     if (token) {
+//       // If the token exists, add it to the request headers
+//       config.headers['Authorization'] = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     // If there's an error, just pass it along
+//     return Promise.reject(error);
+//   }
+// );
 // const api = axios.create({
   // baseURL: '/api', // The vite proxy will handle this
 // });
