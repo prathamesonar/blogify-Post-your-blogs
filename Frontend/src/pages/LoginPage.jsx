@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Header from '../components/Header';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, AlertCircle, Loader, Heart, Github } from 'lucide-react';
@@ -14,6 +14,9 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
+  const navigate = useNavigate();
+
+  // This useEffect is no longer needed and has been removed.
 
   const { loginIdentifier, password } = formData;
 
@@ -31,14 +34,15 @@ const LoginPage = () => {
 
     try {
       const userData = { loginIdentifier, password };
-      const user = await login(userData); // Get the user data from the login function
+      const user = await login(userData);
 
-      // Redirect based on role after successful login using a full page reload
+      // ✅ FIX: Use navigate for a seamless transition without a page reload.
       if (user.role === 'admin') {
-        window.location.href = '/admin/dashboard';
+        navigate('/admin/dashboard', { replace: true });
       } else {
-        window.location.href = '/home';
+        navigate('/home', { replace: true });
       }
+
     } catch (err) {
       const message =
         (err.response && err.response.data && err.response.data.message) ||
@@ -165,12 +169,10 @@ const LoginPage = () => {
       <footer className="bg-gray-900 border-t border-gray-800">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-            {/* Left side - Copyright */}
             <div className="text-gray-400 text-sm">
               © 2025 <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-500 font-semibold">Blogify</span>. All rights reserved.
             </div>
             
-            {/* Right side - Developer Credit */}
             <div className="flex items-center space-x-2 text-gray-400 text-sm">
               <span>Built with</span>
               <Heart className="h-4 w-4 text-red-500 fill-current" />
