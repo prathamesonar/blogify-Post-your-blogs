@@ -1,4 +1,3 @@
-// The main app file with all routes.
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -14,32 +13,44 @@ import MyPostsPage from './pages/MyPostsPage';
 import UserProfilePage from './pages/UserProfilePage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import { PostProvider } from './context/PostContext';
-// AdminLoginPage removed - using regular login for all users
 
-// Protected Route Component
+// A component to display while authentication is loading
+const AuthSpinner = () => (
+  <div className="flex justify-center items-center h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-500"></div>
+  </div>
+);
+
+// ✅ UPDATED Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
+
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return <AuthSpinner />; // Wait for the auth check to complete
   }
+
   return user ? children : <Navigate to="/login" replace />;
 };
 
-// Admin Protected Route Component
+// ✅ UPDATED Admin Protected Route Component
 const AdminProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
+
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return <AuthSpinner />; // Wait for the auth check to complete
   }
+
   return user && user.role === 'admin' ? children : <Navigate to="/login" replace />;
 };
 
-// Public Route Component (redirects to home if logged in)
+// ✅ UPDATED Public Route Component
 const PublicRoute = ({ children }) => {
   const { user, loading } = useAuth();
+
   if (loading) {
-    return <div className="text-center mt-10">Loading...</div>;
+    return <AuthSpinner />; // Wait for the auth check to complete
   }
+
   return !user ? children : <Navigate to="/home" replace />;
 };
 
@@ -57,84 +68,83 @@ const AuthenticatedLayout = ({ children }) => {
 
 function App() {
   return (
-      <PostProvider>
+    <PostProvider>
       <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <LoginPage />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <RegisterPage />
-              </PublicRoute>
-            }
-          />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
+        <Router>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <LoginPage />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <PublicRoute>
+                  <RegisterPage />
+                </PublicRoute>
+              }
+            />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
 
-          {/* Protected routes */}
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <AuthenticatedLayout>
-                  <HomePage />
-                </AuthenticatedLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <ProtectedRoute>
-                <AuthenticatedLayout>
-                  <SettingsPage />
-                </AuthenticatedLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-posts"
-            element={
-              <ProtectedRoute>
-                <AuthenticatedLayout>
-                  <MyPostsPage />
-                </AuthenticatedLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile/:username"
-            element={
-              <ProtectedRoute>
-                <AuthenticatedLayout>
-                  <UserProfilePage />
-                </AuthenticatedLayout>
-              </ProtectedRoute>
-            }
-          />
-          {/* Admin login route removed - using regular login page */}
-          <Route
-            path="/admin/dashboard"
-            element={
-              <AdminProtectedRoute>
-                <AdminDashboardPage />
-              </AdminProtectedRoute>
-            }
-          />
-        </Routes>
-      </Router>
-    </AuthProvider>
+            {/* Protected routes */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <AuthenticatedLayout>
+                    <HomePage />
+                  </AuthenticatedLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <AuthenticatedLayout>
+                    <SettingsPage />
+                  </AuthenticatedLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-posts"
+              element={
+                <ProtectedRoute>
+                  <AuthenticatedLayout>
+                    <MyPostsPage />
+                  </AuthenticatedLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile/:username"
+              element={
+                <ProtectedRoute>
+                  <AuthenticatedLayout>
+                    <UserProfilePage />
+                  </AuthenticatedLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <AdminProtectedRoute>
+                  <AdminDashboardPage />
+                </AdminProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </AuthProvider>
     </PostProvider>
   );
 }
