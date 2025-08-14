@@ -19,7 +19,7 @@ const MyPostsPage = () => {
 
   useEffect(() => {
     // This will only fetch data if it hasn't been fetched before
-    fetchMyPosts();
+    fetchMyPosts(true);
   }, [fetchMyPosts]);
 
   // Refresh posts when navigating to this page (optional, for real-time updates)
