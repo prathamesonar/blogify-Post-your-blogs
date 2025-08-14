@@ -11,21 +11,24 @@ export const PostProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchFeed = useCallback(async () => {
-    if (feedPosts) return; // <-- Don't refetch if we already have the data
+  // MODIFICATION: Add a 'force' parameter to control refetching
+  const fetchFeed = useCallback(async (force = false) => {
+    if (feedPosts && !force) return; // Don't refetch if data exists unless forced
     try {
       setLoading(true);
       const posts = await getFeed();
       setFeedPosts(Array.isArray(posts) ? posts : []);
-    } catch (err) {
+    } catch (err)
+{
       setError('Failed to fetch feed posts.');
     } finally {
       setLoading(false);
     }
   }, [feedPosts]);
 
-  const fetchMyPosts = useCallback(async () => {
-    if (myPosts) return; // <-- Don't refetch if we already have the data
+  // MODIFICATION: Add a 'force' parameter here as well
+  const fetchMyPosts = useCallback(async (force = false) => {
+    if (myPosts && !force) return; // Don't refetch if data exists unless forced
     try {
       setLoading(true);
       const posts = await getMyPosts();
@@ -36,7 +39,7 @@ export const PostProvider = ({ children }) => {
       setLoading(false);
     }
   }, [myPosts]);
-  
+
   // Function to manually clear posts (e.g., on logout)
   const clearPosts = () => {
     setFeedPosts(null);
@@ -50,7 +53,7 @@ export const PostProvider = ({ children }) => {
     error,
     fetchFeed,
     fetchMyPosts,
-    setFeedPosts,
+    setFeedPosts, // Keep these setters if needed elsewhere
     setMyPosts,
     clearPosts
   };
