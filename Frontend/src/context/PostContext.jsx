@@ -11,46 +11,43 @@ export const PostProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // MODIFICATION: Add a 'force' parameter to control refetching
-const fetchFeed = useCallback(async (force = false) => {
-    // If we have posts and we are not forcing a refresh, exit early.
+  // ✅ CORRECTED DEPENDENCIES: Removed state variables from the array.
+  // This ensures the function is stable and doesn't become stale.
+  const fetchFeed = useCallback(async (force = false) => {
     if (feedPosts && !force) {
       return;
     }
-
-    setLoading(true); // Set loading to true ONLY when we are about to fetch.
+    setLoading(true);
     try {
       const posts = await getFeed();
       setFeedPosts(Array.isArray(posts) ? posts : []);
     } catch (err) {
       setError('Failed to fetch feed posts.');
     } finally {
-      setLoading(false); // This will now always run, fixing the stuck loader.
+      setLoading(false);
     }
-  }, [feedPosts]);
+  }, []); // ✅ Dependency array is now empty
 
+  // ✅ CORRECTED DEPENDENCIES: Removed state variables from the array.
   const fetchMyPosts = useCallback(async (force = false) => {
-    // If we have posts and we are not forcing a refresh, exit early.
     if (myPosts && !force) {
       return;
     }
-
-    setLoading(true); // Set loading to true ONLY when we are about to fetch.
+    setLoading(true);
     try {
       const posts = await getMyPosts();
       setMyPosts(Array.isArray(posts) ? posts : []);
     } catch (err) {
       setError('Failed to fetch your posts.');
     } finally {
-      setLoading(false); // This will now always run, fixing the stuck loader.
+      setLoading(false);
     }
-  }, [myPosts]);
+  }, []); // ✅ Dependency array is now empty
 
-  // Function to manually clear posts (e.g., on logout)
   const clearPosts = () => {
     setFeedPosts(null);
     setMyPosts(null);
-  }
+  };
 
   const value = {
     feedPosts,
@@ -59,9 +56,9 @@ const fetchFeed = useCallback(async (force = false) => {
     error,
     fetchFeed,
     fetchMyPosts,
-    setFeedPosts, // Keep these setters if needed elsewhere
+    setFeedPosts,
     setMyPosts,
-    clearPosts
+    clearPosts,
   };
 
   return <PostContext.Provider value={value}>{children}</PostContext.Provider>;
