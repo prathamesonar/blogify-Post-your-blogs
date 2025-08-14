@@ -57,8 +57,8 @@ const AuthenticatedLayout = ({ children }) => {
 
 function App() {
   return (
-    <AuthProvider>
       <PostProvider>
+      <AuthProvider>
       <Router>
         <Routes>
           {/* Public routes */}
@@ -134,8 +134,8 @@ function App() {
           />
         </Routes>
       </Router>
-      </PostProvider>
     </AuthProvider>
+    </PostProvider>
   );
 }
 
