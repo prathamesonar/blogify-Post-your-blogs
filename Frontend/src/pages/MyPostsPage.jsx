@@ -18,9 +18,10 @@ const MyPostsPage = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // This will only fetch data if it hasn't been fetched before
-    fetchMyPosts(true);
-  }, [fetchMyPosts]);
+    if (user) { // ✅ Only fetch if the user exists
+      fetchMyPosts(true); // Force a fresh fetch for the logged-in user
+    }
+  }, [user,fetchMyPosts]);
 
   // Refresh posts when navigating to this page (optional, for real-time updates)
   useEffect(() => {
