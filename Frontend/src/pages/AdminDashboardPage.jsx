@@ -205,7 +205,8 @@ const AdminDashboardPage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">New Users (7 days)</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{analytics?.newUsers7Days || 0}</p>
+                    {/* ✅ FIX: Use dashboardStats instead of analytics */}
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{dashboardStats?.newUsers7Days || 0}</p>
                   </div>
                   <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-300">
                     <UserCheck className="h-6 w-6 text-blue-600 group-hover:text-white" />
@@ -217,7 +218,8 @@ const AdminDashboardPage = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-600">New Posts (7 days)</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{analytics?.newPosts7Days || 0}</p>
+                    {/* ✅ FIX: Use dashboardStats instead of analytics */}
+                    <p className="text-3xl font-bold text-gray-900 mt-2">{dashboardStats?.newPosts7Days || 0}</p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center group-hover:bg-purple-600 transition-colors duration-300">
                     <TrendingUp className="h-6 w-6 text-purple-600 group-hover:text-white" />
