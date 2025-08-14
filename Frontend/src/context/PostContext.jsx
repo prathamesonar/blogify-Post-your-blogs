@@ -12,31 +12,37 @@ export const PostProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // MODIFICATION: Add a 'force' parameter to control refetching
-  const fetchFeed = useCallback(async (force = false) => {
-    if (feedPosts && !force) return; // Don't refetch if data exists unless forced
+const fetchFeed = useCallback(async (force = false) => {
+    // If we have posts and we are not forcing a refresh, exit early.
+    if (feedPosts && !force) {
+      return;
+    }
+
+    setLoading(true); // Set loading to true ONLY when we are about to fetch.
     try {
-      setLoading(true);
       const posts = await getFeed();
       setFeedPosts(Array.isArray(posts) ? posts : []);
-    } catch (err)
-{
+    } catch (err) {
       setError('Failed to fetch feed posts.');
     } finally {
-      setLoading(false);
+      setLoading(false); // This will now always run, fixing the stuck loader.
     }
   }, [feedPosts]);
 
-  // MODIFICATION: Add a 'force' parameter here as well
   const fetchMyPosts = useCallback(async (force = false) => {
-    if (myPosts && !force) return; // Don't refetch if data exists unless forced
+    // If we have posts and we are not forcing a refresh, exit early.
+    if (myPosts && !force) {
+      return;
+    }
+
+    setLoading(true); // Set loading to true ONLY when we are about to fetch.
     try {
-      setLoading(true);
       const posts = await getMyPosts();
       setMyPosts(Array.isArray(posts) ? posts : []);
     } catch (err) {
       setError('Failed to fetch your posts.');
     } finally {
-      setLoading(false);
+      setLoading(false); // This will now always run, fixing the stuck loader.
     }
   }, [myPosts]);
 
