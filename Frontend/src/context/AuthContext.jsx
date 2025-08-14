@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import authService from '../services/authService';
 import { getUserByUsername } from '../services/userService';
-
+import { usePosts } from './PostContext';
 const AuthContext = createContext();
 
 export const useAuth = () => {
@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const refreshUserData = async (username) => {
     try {
       const latest = await getUserByUsername(username);
+      const { clearPosts } = usePosts();
       if (latest?.user) {
         // Preserve the role from the stored user
         const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -78,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setUser(null);
+    clearPosts();
   };
 
   const register = async (userData) => {
