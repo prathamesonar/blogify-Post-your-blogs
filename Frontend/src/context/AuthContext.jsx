@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
           const userData = JSON.parse(storedUser);
           setUser(userData);
           // Optionally refresh user data in the background
-          await refreshUserData(userData.username);
+          // await refreshUserData(userData.username);
         } catch (error) {
           console.error('Error parsing stored user:', error);
           localStorage.removeItem('user');
