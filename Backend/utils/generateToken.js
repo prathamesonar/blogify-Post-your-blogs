@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
 const generateToken = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -8,13 +8,12 @@ const generateToken = (res, userId) => {
   // Set JWT as an HTTP-Only cookie
   res.cookie('jwt', token, {
     httpOnly: true,
-    // ✅ This is the critical change.
-    // 'secure' must be true for sameSite='none' to work.
     // This tells the browser to only send the cookie over HTTPS.
+    // It is essential for cross-domain cookies.
     secure: process.env.NODE_ENV !== 'development', 
     
-    // ✅ This allows the cookie to be sent from your frontend domain
-    // to your backend domain.
+    // This allows the cookie to be sent from your frontend domain
+    // to your backend domain on Render.
     sameSite: 'none', 
     
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
@@ -23,4 +22,4 @@ const generateToken = (res, userId) => {
   return token;
 };
 
-export default generateToken;
+module.exports = generateToken;
